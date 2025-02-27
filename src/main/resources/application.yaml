@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: aisadsa-backend
+  datasource:
+    url: jdbc:mysql://localhost:3306/aisadsa
+    username: root
+    password: 8110
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  server:
+    port: 8080
+  authentication:
+    jwt:
+      secret: aisadsa
+      expires:
+        in: 1200

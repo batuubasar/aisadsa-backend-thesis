@@ -1,0 +1,36 @@
+package com.aisadsa.aisadsabackend.controller;
+
+import com.aisadsa.aisadsabackend.core.dto.request.RegisterRequest;
+import com.aisadsa.aisadsabackend.core.dto.response.UserResponse;
+import com.aisadsa.aisadsabackend.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("api/v1/users")
+@Validated
+@RequiredArgsConstructor
+public class UserController {
+    private final UserService userService;
+
+    @GetMapping("/{email}")
+    public ResponseEntity<UserResponse> get(@PathVariable String email) { return userService.getUserByEmail(email); }
+
+/*
+    @PostMapping("/register")
+    public ResponseEntity<String> register(@Valid @RequestBody RegisterUserRequest registerUserRequest) { return userService.save(registerUserRequest); }
+
+    @PostMapping("/login")
+    public ResponseEntity<UserResponse> login(@RequestBody LoginUserRequest loginUserRequest){
+        return userService.login(loginUserRequest);
+    }
+*/
+
+    @PutMapping("/update-user/{email}")
+    public ResponseEntity<String> update(@PathVariable String email, @RequestBody RegisterRequest registerRequest) { return userService.update(email, registerRequest); }
+
+    @PostMapping("/delete-user/{email}")
+    public ResponseEntity<String> delete(@PathVariable String email) { return userService.delete(email); }
+}

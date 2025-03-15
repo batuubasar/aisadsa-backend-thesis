@@ -5,8 +5,8 @@ import com.aisadsa.aisadsabackend.core.dto.response.UserResponse;
 import com.aisadsa.aisadsabackend.core.exception.BadRequestException;
 import com.aisadsa.aisadsabackend.core.exception.UserNotFoundException;
 import com.aisadsa.aisadsabackend.core.mapper.UserMapper;
-import com.aisadsa.aisadsabackend.entity.User;
-import com.aisadsa.aisadsabackend.repository.UserRepository;
+import com.aisadsa.aisadsabackend.auth.entity.User;
+import com.aisadsa.aisadsabackend.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -51,7 +51,7 @@ public class UserService {
     }
 */
 
-    public ResponseEntity<String> update(String email, RegisterRequest registerRequest) {
+    /*public ResponseEntity<String> update(String email, RegisterRequest registerRequest) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found!"));
 
         user.setFirstName(registerRequest.getFirstName());
@@ -61,7 +61,7 @@ public class UserService {
 
         userRepository.save(user);
         return ResponseEntity.ok("User successfully updated.");
-    }
+    }*/
 
     public ResponseEntity<String> delete(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found!"));

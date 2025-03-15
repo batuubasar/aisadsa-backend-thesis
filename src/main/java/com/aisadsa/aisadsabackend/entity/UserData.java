@@ -1,5 +1,6 @@
 package com.aisadsa.aisadsabackend.entity;
 
+import com.aisadsa.aisadsabackend.auth.entity.User;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;

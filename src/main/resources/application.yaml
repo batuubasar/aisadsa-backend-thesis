@@ -11,8 +11,22 @@ spring:
     show-sql: true
   server:
     port: 8080
-  authentication:
-    jwt:
-      secret: aisadsa
-      expires:
-        in: 1200
+  servlet:
+    max-file-size: 10MB
+    max-request-size: 10MB
+#  mail:
+#    host: smtp.gmail.com
+#    port: 587
+#    username: "batuhan"
+#    password: "batuhan"
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          starttls:
+#            enable: true
+#  authentication:
+#    jwt:
+#      secret: aisadsa
+#      expires:
+#        in: 1200

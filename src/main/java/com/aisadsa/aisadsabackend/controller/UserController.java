@@ -28,8 +28,10 @@ public class UserController {
     }
 */
 
+/*
     @PutMapping("/update-user/{email}")
     public ResponseEntity<String> update(@PathVariable String email, @RequestBody RegisterRequest registerRequest) { return userService.update(email, registerRequest); }
+*/
 
     @PostMapping("/delete-user/{email}")
     public ResponseEntity<String> delete(@PathVariable String email) { return userService.delete(email); }

@@ -26,14 +26,14 @@ public class UserService {
 
     public ResponseEntity<UserResponse> getUserByEmail(String email){
 
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
+        User user = userRepository.findByUsername(email).orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
 
         UserResponse userResponse = UserMapper.INSTANCE.getUserResponseFromUser(user);
         return ResponseEntity.ok(userResponse);
     }
 
     public ResponseEntity<String> save(RegisterRequest registerRequest) {
-        userRepository.findByEmail(registerRequest.getEmail()).ifPresent(u -> { throw new BadRequestException("Email already exists!");});
+        userRepository.findByUsername(registerRequest.getEmail()).ifPresent(u -> { throw new BadRequestException("Email already exists!");});
 
         isValidPassword(registerRequest.getPassword());
         User user = UserMapper.INSTANCE.getUserFromRegisterUserRequest(registerRequest);
@@ -64,7 +64,7 @@ public class UserService {
     }*/
 
     public ResponseEntity<String> delete(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found!"));
+        User user = userRepository.findByUsername(email).orElseThrow(() -> new UserNotFoundException("User not found!"));
 
         userRepository.delete(user);
         return ResponseEntity.ok("User successfully deleted.");
@@ -96,11 +96,11 @@ public class UserService {
     /**
      * Used in UserDataService, AuthController to return userId
      */
-    public UUID getUserId(String email) {
+    public User getUserByUsername(String username) {
 
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found!"));
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found!"));
 
-        return user.getId();
+        return user;
 
     }
 }

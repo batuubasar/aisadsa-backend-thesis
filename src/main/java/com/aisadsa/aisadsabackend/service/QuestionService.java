@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class QuestionService {
@@ -23,6 +25,10 @@ public class QuestionService {
 
         QuestionResponse questionResponse = QuestionMapper.INSTANCE.getQuestionResponseFromQuestion(question);
         return ResponseEntity.ok(questionResponse);
+    }
+
+    public Question getQuestionById(UUID questionID) {
+        return questionRepository.findByQuestionId(questionID);
     }
 
     public ResponseEntity<String> save(CreateQuestionRequest createQuestionRequest) {

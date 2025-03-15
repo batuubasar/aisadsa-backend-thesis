@@ -12,6 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UserDataResponse {
 
+    private String questionKey;
     @NotBlank(message = "userData is required!")
     private String userData;
 }

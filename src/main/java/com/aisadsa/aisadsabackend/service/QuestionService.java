@@ -19,7 +19,7 @@ import java.util.UUID;
 public class QuestionService {
     private final QuestionRepository questionRepository;
 
-    public ResponseEntity<QuestionResponse> getQuestionByKey(String questionKey){
+    public ResponseEntity<QuestionResponse> getQuestionResponseByKey(String questionKey){
 
         Question question = questionRepository.findByQuestionKey(questionKey).orElseThrow(() -> new QuestionNotFoundException("Question not found!"));
 
@@ -27,8 +27,8 @@ public class QuestionService {
         return ResponseEntity.ok(questionResponse);
     }
 
-    public Question getQuestionById(UUID questionID) {
-        return questionRepository.findByQuestionId(questionID);
+    public Question getQuestionByKey(String questionKey) {
+        return questionRepository.findByQuestionKey(questionKey).orElseThrow(() -> new QuestionNotFoundException("Question not found!"));
     }
 
     public ResponseEntity<String> save(CreateQuestionRequest createQuestionRequest) {

@@ -14,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class CreateUserDataRequest {
 
-    UUID questionId;
+    String questionKey;
     @NotBlank(message = "UserData is required!")
     String UserData;
 }

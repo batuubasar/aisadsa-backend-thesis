@@ -36,7 +36,7 @@ public class UserDataService {
         // TODO: frontend'den questionKey gelecek.
 
         User user = userService.getUserByUsername(username);
-        Question question = questionService.getQuestionById(createUserDataRequest.getQuestionId());
+        Question question = questionService.getQuestionByKey(createUserDataRequest.getQuestionKey());
 
         CreateUserDataDTO createUserDataDTO = new CreateUserDataDTO(user, question, createUserDataRequest.getUserData());
 
@@ -48,9 +48,9 @@ public class UserDataService {
 
     public ResponseEntity<String> update(String username, CreateUserDataRequest createUserDataRequest) {
         User user = userService.getUserByUsername(username);
-        Question question = questionService.getQuestionById(createUserDataRequest.getQuestionId());
+        Question question = questionService.getQuestionByKey(createUserDataRequest.getQuestionKey());
 
-        UserData userData = userDataRepository.findByUserIdandQuestionId(user.getId(), question.getId());
+        UserData userData = userDataRepository.findByUserIdAndQuestionId(user.getId(), question.getId());
 
         userData.setUserData(createUserDataRequest.getUserData());
         userData.setUser(user);
@@ -62,12 +62,11 @@ public class UserDataService {
 
     public ResponseEntity<String> delete(String username, UUID questionId) {
         User user = userService.getUserByUsername(username);
-        UserData userData = userDataRepository.findByUserIdandQuestionId(user.getId(), questionId);
+        UserData userData = userDataRepository.findByUserIdAndQuestionId(user.getId(), questionId);
 
         userDataRepository.delete(userData);
         return ResponseEntity.ok("Question successfully deleted.");
     }
-
 }
 
 

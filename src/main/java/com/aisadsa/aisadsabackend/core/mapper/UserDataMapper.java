@@ -9,11 +9,15 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
+
 @Mapper
 public interface UserDataMapper {
     UserDataMapper INSTANCE = Mappers.getMapper(UserDataMapper.class);
 
     UserDataResponse getUserDataResponseFromUserData(UserData userData);
+
+    List<UserDataResponse> getUserDataResponseListFromUserDataList(List<UserData> userDataList);
 
     UserData getUserDataFromCreateUserDataDTO(CreateUserDataDTO createUserDataDTO);
 

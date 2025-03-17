@@ -16,10 +16,6 @@ public class UserData {
     @Column(name = "user_data_id", nullable = false)
     private UUID userDataId;
 
-
-    @Column(name = "user_data", nullable = false)
-    private String userData;
-
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -28,4 +24,6 @@ public class UserData {
     @JoinColumn(name = "question_id", nullable = false)
     private Question question;
 
+    @Column(name = "user_data", nullable = false)
+    private String userData;
 }

@@ -5,6 +5,7 @@ import com.aisadsa.aisadsabackend.auth.entity.User;
 import com.aisadsa.aisadsabackend.core.dto.CreateUserDataDTO;
 import com.aisadsa.aisadsabackend.core.dto.request.CreateUserDataRequest;
 import com.aisadsa.aisadsabackend.core.dto.response.UserDataResponse;
+import com.aisadsa.aisadsabackend.core.exception.UserDataNotFoundException;
 import com.aisadsa.aisadsabackend.core.mapper.UserDataMapper;
 import com.aisadsa.aisadsabackend.entity.Question;
 import com.aisadsa.aisadsabackend.entity.UserData;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 
 @Service
@@ -27,14 +29,14 @@ public class UserDataService {
 
     public List<UserDataResponse> getAllDataOfUser(String username) {
         UUID userId = userService.getUserByUsername(username).getId();
-        return userDataRepository.findByUserId(userId);
+        List<UserData> userDataList = userDataRepository.findByUserId(userId);
+        List<UserDataResponse> userDataResponseList = UserDataMapper.INSTANCE.getUserDataResponseListFromUserDataList(userDataList);
+        IntStream.range(0, userDataList.size())
+                .forEach(i -> userDataResponseList.get(i).setQuestionKey(userDataList.get(i).getQuestion().getQuestionKey()));
+        return userDataResponseList;
     }
 
     public ResponseEntity<String> save(String username, CreateUserDataRequest createUserDataRequest) {
-        // TODO: 11.02.2025 jwt authentication sağlandıktan sonra UserData oluşturabilmek için
-        // TODO: authenticationdan currentUser çekilecek onla userId fieldı doldurulacak
-        // TODO: frontend'den questionKey gelecek.
-
         User user = userService.getUserByUsername(username);
         Question question = questionService.getQuestionByKey(createUserDataRequest.getQuestionKey());
 
@@ -50,7 +52,7 @@ public class UserDataService {
         User user = userService.getUserByUsername(username);
         Question question = questionService.getQuestionByKey(createUserDataRequest.getQuestionKey());
 
-        UserData userData = userDataRepository.findByUserIdAndQuestionId(user.getId(), question.getId());
+        UserData userData = userDataRepository.findByUserIdAndQuestionId(user.getId(), question.getId()).orElseThrow(() -> new UserDataNotFoundException("UserData not found!"));
 
         userData.setUserData(createUserDataRequest.getUserData());
         userData.setUser(user);
@@ -62,7 +64,7 @@ public class UserDataService {
 
     public ResponseEntity<String> delete(String username, UUID questionId) {
         User user = userService.getUserByUsername(username);
-        UserData userData = userDataRepository.findByUserIdAndQuestionId(user.getId(), questionId);
+        UserData userData = userDataRepository.findByUserIdAndQuestionId(user.getId(), questionId).orElseThrow(() -> new UserDataNotFoundException("UserData not found!"));
 
         userDataRepository.delete(userData);
         return ResponseEntity.ok("Question successfully deleted.");

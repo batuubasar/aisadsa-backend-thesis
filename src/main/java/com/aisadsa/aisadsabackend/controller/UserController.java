@@ -19,16 +19,6 @@ public class UserController {
     public ResponseEntity<UserResponse> get(@PathVariable String email) { return userService.getUserByEmail(email); }
 
 /*
-    @PostMapping("/register")
-    public ResponseEntity<String> register(@Valid @RequestBody RegisterUserRequest registerUserRequest) { return userService.save(registerUserRequest); }
-
-    @PostMapping("/login")
-    public ResponseEntity<UserResponse> login(@RequestBody LoginUserRequest loginUserRequest){
-        return userService.login(loginUserRequest);
-    }
-*/
-
-/*
     @PutMapping("/update-user/{email}")
     public ResponseEntity<String> update(@PathVariable String email, @RequestBody RegisterRequest registerRequest) { return userService.update(email, registerRequest); }
 */

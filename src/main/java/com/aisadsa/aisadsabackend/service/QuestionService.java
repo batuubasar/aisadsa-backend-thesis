@@ -31,12 +31,13 @@ public class QuestionService {
         return questionRepository.findByQuestionKey(questionKey).orElseThrow(() -> new QuestionNotFoundException("Question not found!"));
     }
 
+    public Question getQuestionById(UUID questionId) {
+        return questionRepository.findById(questionId).orElseThrow(() -> new QuestionNotFoundException("Question not found!"));
+    }
+
     public ResponseEntity<String> save(CreateQuestionRequest createQuestionRequest) {
 
-        questionRepository.findByQuestionKey(createQuestionRequest.getQuestionKey()).orElseThrow(() -> new BadRequestException("Question already exists!"));
-
-
-
+        questionRepository.findByQuestionKey(createQuestionRequest.getQuestionKey()).ifPresent(q -> {throw new BadRequestException("Question already exists!");});
         Question question = QuestionMapper.INSTANCE.getQuestionFromCreateQuestionRequest(createQuestionRequest);
         questionRepository.save(question);
         return ResponseEntity.status(HttpStatus.CREATED).body("Question successfully created.");

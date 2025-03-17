@@ -9,21 +9,19 @@ import com.aisadsa.aisadsabackend.core.dto.request.LoginRequest;
 import com.aisadsa.aisadsabackend.core.dto.request.RefreshTokenRequest;
 import com.aisadsa.aisadsabackend.core.dto.request.RegisterRequest;
 import com.aisadsa.aisadsabackend.core.dto.response.AuthResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth/")
 @CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
     private final RefreshTokenService refreshTokenService;
     private final JwtService jwtService;
-    public AuthController(AuthService authService, RefreshTokenService refreshTokenService, JwtService jwtService) {
-        this.authService = authService;
-        this.refreshTokenService = refreshTokenService;
-        this.jwtService = jwtService;
-    }
+
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest registerRequest) {
         return ResponseEntity.ok(authService.register(registerRequest));

@@ -21,26 +21,26 @@ public class UserDataController {
     private final UserDataService userDataService;
     private final JwtService jwtService;
 
-    @GetMapping("/{userEmail}")
-    public List<UserDataResponse> getAllDataOfUser(String username) {
+    @GetMapping("/{username}")
+    public List<UserDataResponse> getAllDataOfUser(@PathVariable String username) {
         return userDataService.getAllDataOfUser(username);
     }
 
-    @PostMapping("/create-userdata")
-    public ResponseEntity<String> createUserData(@RequestHeader("Authorization") String authHeader, @Valid @RequestBody CreateUserDataRequest createUserDataRequest) {
+    @PostMapping("/create")
+    public ResponseEntity<String> create(@RequestHeader("Authorization") String authHeader, @Valid @RequestBody CreateUserDataRequest createUserDataRequest) {
         String jwt = authHeader.substring(7);
         String username = jwtService.extractUsername(jwt);
         return userDataService.save(username ,createUserDataRequest);
     }
 
-    @PostMapping("/update-userdata")
-    public ResponseEntity<String> updateUserData(@RequestHeader("Authorization") String authHeader, @Valid @RequestBody CreateUserDataRequest createUserDataRequest) {
+    @PutMapping("/update")
+    public ResponseEntity<String> update(@RequestHeader("Authorization") String authHeader, @Valid @RequestBody CreateUserDataRequest createUserDataRequest) {
         String jwt = authHeader.substring(7);
         String username = jwtService.extractUsername(jwt);
         return userDataService.update(username ,createUserDataRequest);
     }
 
-    @PostMapping("/delete-userdata/{questionId}")
+    @PostMapping("/delete/{questionId}")
     public ResponseEntity<String> delete(@RequestHeader("Authorization") String authHeader, @PathVariable UUID questionId) {
         String jwt = authHeader.substring(7);
         String username = jwtService.extractUsername(jwt);

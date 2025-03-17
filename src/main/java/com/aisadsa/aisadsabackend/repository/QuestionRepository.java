@@ -10,5 +10,7 @@ import java.util.UUID;
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, UUID> {
 
+    @Override
+    Optional<Question> findById(UUID questionId);
     Optional<Question> findByQuestionKey(String questionKey);
 }

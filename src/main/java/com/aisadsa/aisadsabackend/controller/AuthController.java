@@ -41,7 +41,4 @@ public class AuthController {
                 .refreshToken(refreshToken.getRefreshToken())
                 .build());
     }
-
-
-    //TODO  authentication'ı email yerine username kullanarak yapmak daha sağlıklı olacak!!
 }

@@ -40,11 +40,11 @@ public class UserDataController {
         return userDataService.update(username ,createUserDataRequest);
     }
 
-    @PostMapping("/delete/{questionId}")
-    public ResponseEntity<String> delete(@RequestHeader("Authorization") String authHeader, @PathVariable UUID questionId) {
+    @PostMapping("/delete/{questionKey}")
+    public ResponseEntity<String> delete(@RequestHeader("Authorization") String authHeader, @PathVariable String questionKey) {
         String jwt = authHeader.substring(7);
         String username = jwtService.extractUsername(jwt);
-        return userDataService.delete(username ,questionId);
+        return userDataService.delete(username ,questionKey);
     }
 
 }

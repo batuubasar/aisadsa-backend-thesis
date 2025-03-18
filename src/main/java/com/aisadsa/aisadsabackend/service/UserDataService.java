@@ -5,6 +5,7 @@ import com.aisadsa.aisadsabackend.auth.entity.User;
 import com.aisadsa.aisadsabackend.core.dto.CreateUserDataDto;
 import com.aisadsa.aisadsabackend.core.dto.request.CreateUserDataRequest;
 import com.aisadsa.aisadsabackend.core.dto.response.UserDataResponse;
+import com.aisadsa.aisadsabackend.core.exception.BadRequestException;
 import com.aisadsa.aisadsabackend.core.exception.UserDataNotFoundException;
 import com.aisadsa.aisadsabackend.core.mapper.UserDataMapper;
 import com.aisadsa.aisadsabackend.entity.Question;
@@ -44,6 +45,7 @@ public class UserDataService {
         CreateUserDataDto createUserDataDto = new CreateUserDataDto(user, question, createUserDataRequest.getUserData());
         UserData userData = UserDataMapper.INSTANCE.getUserDataFromCreateUserDataDto(createUserDataDto);
 
+        userDataRepository.findByUserIdAndQuestionId(user.getId(), question.getId()).ifPresent(ud -> {throw new BadRequestException("UserData already exists!");});
         userDataRepository.save(userData);
         return ResponseEntity.status(HttpStatus.CREATED).body("UserData successfully created.");
     }
@@ -62,9 +64,11 @@ public class UserDataService {
         return ResponseEntity.ok("UserData successfully updated!");
     }
 
-    public ResponseEntity<String> delete(String username, UUID questionId) {
+    // TODO delete çalışmıyor!
+    public ResponseEntity<String> delete(String username, String questionKey) {
         User user = userService.getUserByUsername(username);
-        UserData userData = userDataRepository.findByUserIdAndQuestionId(user.getId(), questionId).orElseThrow(() -> new UserDataNotFoundException("UserData not found!"));
+        Question question = questionService.getQuestionByKey(questionKey);
+        UserData userData = userDataRepository.findByUserIdAndQuestionId(user.getId(), question.getId()).orElseThrow(() -> new UserDataNotFoundException("UserData not found!"));
 
         userDataRepository.delete(userData);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Question successfully deleted.");

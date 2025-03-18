@@ -11,6 +11,7 @@ import com.aisadsa.aisadsabackend.entity.Question;
 import com.aisadsa.aisadsabackend.entity.UserData;
 import com.aisadsa.aisadsabackend.repository.UserDataRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -27,13 +28,13 @@ public class UserDataService {
     private final QuestionService questionService;
 
 
-    public List<UserDataResponse> getAllDataOfUser(String username) {
+    public ResponseEntity<List<UserDataResponse>> getAllDataOfUser(String username) {
         UUID userId = userService.getUserByUsername(username).getId();
         List<UserData> userDataList = userDataRepository.findByUserId(userId);
         List<UserDataResponse> userDataResponseList = UserDataMapper.INSTANCE.getUserDataResponseListFromUserDataList(userDataList);
         IntStream.range(0, userDataList.size())
                 .forEach(i -> userDataResponseList.get(i).setQuestionKey(userDataList.get(i).getQuestion().getQuestionKey()));
-        return userDataResponseList;
+        return ResponseEntity.ok(userDataResponseList);
     }
 
     public ResponseEntity<String> save(String username, CreateUserDataRequest createUserDataRequest) {
@@ -41,11 +42,10 @@ public class UserDataService {
         Question question = questionService.getQuestionByKey(createUserDataRequest.getQuestionKey());
 
         CreateUserDataDto createUserDataDto = new CreateUserDataDto(user, question, createUserDataRequest.getUserData());
-
         UserData userData = UserDataMapper.INSTANCE.getUserDataFromCreateUserDataDto(createUserDataDto);
 
         userDataRepository.save(userData);
-        return ResponseEntity.ok("UserData successfully saved!");
+        return ResponseEntity.status(HttpStatus.CREATED).body("UserData successfully created.");
     }
 
     public ResponseEntity<String> update(String username, CreateUserDataRequest createUserDataRequest) {
@@ -67,7 +67,7 @@ public class UserDataService {
         UserData userData = userDataRepository.findByUserIdAndQuestionId(user.getId(), questionId).orElseThrow(() -> new UserDataNotFoundException("UserData not found!"));
 
         userDataRepository.delete(userData);
-        return ResponseEntity.ok("Question successfully deleted.");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Question successfully deleted.");
     }
 }
 

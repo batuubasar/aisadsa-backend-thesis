@@ -22,7 +22,7 @@ public class UserDataController {
     private final JwtService jwtService;
 
     @GetMapping("/{username}")
-    public List<UserDataResponse> getAllDataOfUser(@PathVariable String username) {
+    public ResponseEntity<List<UserDataResponse>> getAllDataOfUser(@PathVariable String username) {
         return userDataService.getAllDataOfUser(username);
     }
 

@@ -56,7 +56,7 @@ public class UserService {
         User user = userRepository.findByUsername(email).orElseThrow(() -> new UserNotFoundException("User not found!"));
 
         userRepository.delete(user);
-        return ResponseEntity.ok("User successfully deleted.");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User successfully deleted.");
     }
 
     /**

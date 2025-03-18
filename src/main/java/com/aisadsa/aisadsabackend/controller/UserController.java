@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/v1/users")
 @Validated
@@ -15,8 +17,13 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
 
-    @GetMapping("/{email}")
-    public ResponseEntity<UserResponse> get(@PathVariable String email) { return userService.getUserByEmail(email); }
+
+
+    @GetMapping("/{username}")
+    public ResponseEntity<UserResponse> get(@PathVariable String username) { return userService.getUserResponseByUsername(username); }
+
+    @GetMapping("/")
+    public ResponseEntity<List<UserResponse>> getAll() { return userService.getAllUsers(); }
 
 /*
     @PutMapping("/update-user/{email}")

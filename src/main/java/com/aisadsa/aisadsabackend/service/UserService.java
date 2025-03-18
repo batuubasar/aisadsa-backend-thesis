@@ -14,7 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,32 +26,19 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public ResponseEntity<UserResponse> getUserByEmail(String email){
+    public ResponseEntity<UserResponse> getUserResponseByUsername(String username){
 
-        User user = userRepository.findByUsername(email).orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
-
-        UserResponse userResponse = UserMapper.INSTANCE.getUserResponseFromUser(user);
-        return ResponseEntity.ok(userResponse);
-    }
-
-    public ResponseEntity<String> save(RegisterRequest registerRequest) {
-        userRepository.findByUsername(registerRequest.getEmail()).ifPresent(u -> { throw new BadRequestException("Email already exists!");});
-
-        isValidPassword(registerRequest.getPassword());
-        User user = UserMapper.INSTANCE.getUserFromRegisterUserRequest(registerRequest);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body("User successfully registered.");
-    }
-
-/*
-    public ResponseEntity<UserResponse> login(LoginUserRequest loginUserRequest) {
-        User user = userRepository.findByEmailAndPassword(loginUserRequest.getEmail(), loginUserRequest.getPassword()).orElseThrow(() -> new UserNotFoundException("User not found!"));
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found with username: " + username));
 
         UserResponse userResponse = UserMapper.INSTANCE.getUserResponseFromUser(user);
         return ResponseEntity.ok(userResponse);
     }
-*/
+
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
+        List<User> userList = userRepository.findAll();
+        List<UserResponse> userResponseList = userList.stream().map(UserMapper.INSTANCE::getUserResponseFromUser).toList();
+        return ResponseEntity.ok(userResponseList);
+    }
 
     /*public ResponseEntity<String> update(String email, RegisterRequest registerRequest) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found!"));
@@ -68,29 +57,6 @@ public class UserService {
 
         userRepository.delete(user);
         return ResponseEntity.ok("User successfully deleted.");
-    }
-
-    public void isValidPassword(String password){
-        if (password.length() < 5) {
-            throw new BadRequestException("Password must be at least 5 characters long!");
-        }
-        boolean hasUpperCase = false;
-        boolean hasLowerCase = false;
-        boolean hasDigit = false;
-        for (char ch : password.toCharArray()) {
-            if (Character.isUpperCase(ch)) {
-                hasUpperCase = true;
-            }
-            if (Character.isLowerCase(ch)) {
-                hasLowerCase = true;
-            }
-            if (Character.isDigit(ch)) {
-                hasDigit = true;
-            }
-        }
-        if (!hasUpperCase || !hasLowerCase || !hasDigit) {
-            throw new BadRequestException("Password must contain at least one uppercase letter, one lowercase letter, and one number!");
-        }
     }
 
     /**

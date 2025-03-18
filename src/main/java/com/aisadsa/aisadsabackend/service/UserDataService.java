@@ -2,7 +2,7 @@ package com.aisadsa.aisadsabackend.service;
 
 
 import com.aisadsa.aisadsabackend.auth.entity.User;
-import com.aisadsa.aisadsabackend.core.dto.CreateUserDataDTO;
+import com.aisadsa.aisadsabackend.core.dto.CreateUserDataDto;
 import com.aisadsa.aisadsabackend.core.dto.request.CreateUserDataRequest;
 import com.aisadsa.aisadsabackend.core.dto.response.UserDataResponse;
 import com.aisadsa.aisadsabackend.core.exception.UserDataNotFoundException;
@@ -40,9 +40,9 @@ public class UserDataService {
         User user = userService.getUserByUsername(username);
         Question question = questionService.getQuestionByKey(createUserDataRequest.getQuestionKey());
 
-        CreateUserDataDTO createUserDataDTO = new CreateUserDataDTO(user, question, createUserDataRequest.getUserData());
+        CreateUserDataDto createUserDataDto = new CreateUserDataDto(user, question, createUserDataRequest.getUserData());
 
-        UserData userData = UserDataMapper.INSTANCE.getUserDataFromCreateUserDataDTO(createUserDataDTO);
+        UserData userData = UserDataMapper.INSTANCE.getUserDataFromCreateUserDataDto(createUserDataDto);
 
         userDataRepository.save(userData);
         return ResponseEntity.ok("UserData successfully saved!");

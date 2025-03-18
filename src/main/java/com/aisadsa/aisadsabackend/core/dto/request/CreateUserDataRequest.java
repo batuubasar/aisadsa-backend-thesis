@@ -6,12 +6,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateUserDataRequest {
 
+    String questionKey;
     @NotBlank(message = "UserData is required!")
     String UserData;
 }

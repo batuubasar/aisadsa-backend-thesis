@@ -1,5 +1,6 @@
 package com.aisadsa.aisadsabackend.entity;
 
+import com.aisadsa.aisadsabackend.auth.entity.User;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,10 +16,6 @@ public class UserData {
     @Column(name = "user_data_id", nullable = false)
     private UUID userDataId;
 
-
-    @Column(name = "user_data", nullable = false)
-    private String userData;
-
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -26,5 +23,8 @@ public class UserData {
     @ManyToOne
     @JoinColumn(name = "question_id", nullable = false)
     private Question question;
+
+    @Column(name = "user_data", nullable = false)
+    private String userData;
 
 }

@@ -12,25 +12,29 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class QuestionService {
     private final QuestionRepository questionRepository;
 
-    public ResponseEntity<QuestionResponse> getQuestionByKey(String questionKey){
-
+    public ResponseEntity<QuestionResponse> getQuestionResponseByKey(String questionKey){
         Question question = questionRepository.findByQuestionKey(questionKey).orElseThrow(() -> new QuestionNotFoundException("Question not found!"));
-
         QuestionResponse questionResponse = QuestionMapper.INSTANCE.getQuestionResponseFromQuestion(question);
         return ResponseEntity.ok(questionResponse);
     }
 
+    public Question getQuestionByKey(String questionKey) {
+        return questionRepository.findByQuestionKey(questionKey).orElseThrow(() -> new QuestionNotFoundException("Question not found!"));
+    }
+
+    public Question getQuestionById(UUID questionId) {
+        return questionRepository.findById(questionId).orElseThrow(() -> new QuestionNotFoundException("Question not found!"));
+    }
+
     public ResponseEntity<String> save(CreateQuestionRequest createQuestionRequest) {
-
-        questionRepository.findByQuestionKey(createQuestionRequest.getQuestionKey()).orElseThrow(() -> new BadRequestException("Question already exists!"));
-
-
-
+        questionRepository.findByQuestionKey(createQuestionRequest.getQuestionKey()).ifPresent(q -> {throw new BadRequestException("Question already exists!");});
         Question question = QuestionMapper.INSTANCE.getQuestionFromCreateQuestionRequest(createQuestionRequest);
         questionRepository.save(question);
         return ResponseEntity.status(HttpStatus.CREATED).body("Question successfully created.");
@@ -52,8 +56,7 @@ public class QuestionService {
 
     public ResponseEntity<String> delete(String questionKey) {
         Question question = questionRepository.findByQuestionKey(questionKey).orElseThrow(() -> new BadRequestException("Question doesn't exist!"));
-
         questionRepository.delete(question);
-        return ResponseEntity.ok("Question successfully deleted.");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Question successfully deleted.");
     }
 }

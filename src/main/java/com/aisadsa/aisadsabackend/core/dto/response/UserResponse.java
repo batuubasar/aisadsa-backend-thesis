@@ -12,11 +12,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserResponse {
-    private String firstName;
-    private String lastName;
-
+    private String name;
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
     private String email;
-
+    @NotBlank(message = "Username is required")
+    private String username;
 }

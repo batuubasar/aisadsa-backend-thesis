@@ -15,7 +15,7 @@ public class QuestionController {
     private final QuestionService questionService;
 
     @GetMapping("/{questionKey}")
-    public ResponseEntity<QuestionResponse>  get(@PathVariable String questionKey) { return questionService.getQuestionByKey(questionKey); }
+    public ResponseEntity<QuestionResponse>  get(@PathVariable String questionKey) { return questionService.getQuestionResponseByKey(questionKey); }
 
     @PostMapping("/create-question")
     public ResponseEntity<String> create(@Valid @RequestBody CreateQuestionRequest createQuestionRequest) { return questionService.save(createQuestionRequest); }

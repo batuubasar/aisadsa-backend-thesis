@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/v1/users")
 @Validated
@@ -15,21 +17,18 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
 
-    @GetMapping("/{email}")
-    public ResponseEntity<UserResponse> get(@PathVariable String email) { return userService.getUserByEmail(email); }
+
+
+    @GetMapping("/{username}")
+    public ResponseEntity<UserResponse> get(@PathVariable String username) { return userService.getUserResponseByUsername(username); }
+
+    @GetMapping("/")
+    public ResponseEntity<List<UserResponse>> getAll() { return userService.getAllUsers(); }
 
 /*
-    @PostMapping("/register")
-    public ResponseEntity<String> register(@Valid @RequestBody RegisterUserRequest registerUserRequest) { return userService.save(registerUserRequest); }
-
-    @PostMapping("/login")
-    public ResponseEntity<UserResponse> login(@RequestBody LoginUserRequest loginUserRequest){
-        return userService.login(loginUserRequest);
-    }
-*/
-
     @PutMapping("/update-user/{email}")
     public ResponseEntity<String> update(@PathVariable String email, @RequestBody RegisterRequest registerRequest) { return userService.update(email, registerRequest); }
+*/
 
     @PostMapping("/delete-user/{email}")
     public ResponseEntity<String> delete(@PathVariable String email) { return userService.delete(email); }

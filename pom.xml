@@ -30,6 +30,7 @@
         <java.version>21</java.version>
         <!--<spring-ai.version>1.0.0-M4</spring-ai.version>-->
         <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
+        <drools.version>8.42.0.Final</drools.version> <!-- eklenen-->
     </properties>
     <dependencies>
         <dependency>
@@ -120,6 +121,28 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-mvel</artifactId>
+            <version>${drools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-core</artifactId>
+            <version>${drools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-compiler</artifactId>
+            <version>${drools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-decisiontables</artifactId>
+            <version>${drools.version}</version>
+        </dependency>
+
     </dependencies>
     <dependencyManagement>
         <dependencies>

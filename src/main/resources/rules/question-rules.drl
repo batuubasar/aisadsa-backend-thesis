@@ -1,0 +1,140 @@
+import com.aisadsa.aisadsabackend.core.dto.CreateUserDataDto;
+global  com.aisadsa.aisadsabackend.entity.Recommendation recommendation;
+import com.aisadsa.aisadsabackend.core.dto.request.CreateUserDataRequest;
+
+// NOT İLİŞKİSEL - EVET VE BÜTÇE YÜKSEKTEKİ COMMENTLERE BAK ve mühendisin beceri seti 3 cevap olabilr 4 yerine
+// akış verisi data lake eklenebilr ????
+dialect "mvel"
+
+rule "iliskisel - Evet"
+    when
+        CreateUserDataRequest(questionKey.equals("iliskisel")) and CreateUserDataRequest(userData.equals("Evet"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+    then
+        //questionRecommendation.recommendation = "DWH";
+        recommendation.recommendationScores.put("DWH", recommendation.recommendationScores.get("DWH") + 50);
+
+end
+
+rule "iliskisel - Hayir"
+    when
+        CreateUserDataRequest(questionKey.equals("iliskisel")) and CreateUserDataRequest(userData.equals("Hayir"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+    then
+        //questionRecommendation.recommendation = "Modern Data Warehouse, Data Lake, Data Lakehouse, Data Fabric veya Data Mesh";
+        recommendation.recommendationScores.put("modernDataWarehouse", recommendation.recommendationScores.get("modernDataWarehouse") +3);
+        recommendation.recommendationScores.put("dataLake", recommendation.recommendationScores.get("dataLake") + 40);
+        recommendation.recommendationScores.put("dataLakehouse", recommendation.recommendationScores.get("dataLakehouse") +35);
+        recommendation.recommendationScores.put("dataFabric", recommendation.recommendationScores.get("dataFabric") +34);
+        recommendation.recommendationScores.put("dataMesh", recommendation.recommendationScores.get("dataMesh") +33);
+
+end
+
+rule "Bütçe - Yüksek" /// !!! buraya bütçe yüksek olsa bile orta bütçedekilere 10 puan küçük bütçeye 5 puan tarzı verilebilir
+    when
+        CreateUserDataDto(question.questionKey.equals("Bütçe")) and CreateUserDataDto(userData.equals("Yüksek"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+    then
+        //questionRecommendation.recommendation = "DWH veya Data Mesh";
+        recommendation.recommendationScores.put("DWH", recommendation.recommendationScores.get("DWH") +26);
+        recommendation.recommendationScores.put("dataMesh", recommendation.recommendationScores.get("dataMesh") +25);
+
+end
+
+rule "Bütçe - Orta"
+    when
+        CreateUserDataDto(question.questionKey.equals("Bütçe")) and CreateUserDataDto(userData.equals("Orta"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+    then
+        //questionRecommendation.recommendation = "Modern Data Warehouse, Data Lakehouse, Data Fabric";
+        recommendation.recommendationScores.put("modernDataWarehouse", recommendation.recommendationScores.get("modernDataWarehouse") +35);
+        recommendation.recommendationScores.put("dataLakehouse", recommendation.recommendationScores.get("dataLakehouse") +34);
+        recommendation.recommendationScores.put("dataFabric", recommendation.recommendationScores.get("dataFabric") +33);
+        end
+
+
+rule "Bütçe - Düşük"
+    when
+        CreateUserDataDto(question.questionKey.equals("Bütçe")) and CreateUserDataDto(userData.equals("Düşük"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+    then
+        //questionRecommendation.recommendation = "Data Lake";
+        recommendation.recommendationScores.put("dataLake", recommendation.recommendationScores.get("dataLake") + 40);
+
+end
+
+rule "Akış Verisi - Evet"
+    when
+        CreateUserDataDto(question.questionKey.equals("Akış Verisi")) and CreateUserDataDto(userData.equals("Evet"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+    then
+        recommendation.recommendationScores.put("dataLakehouse", recommendation.recommendationScores.get("dataLakehouse") + 20);
+        recommendation.recommendationScores.put("dataFabric", recommendation.recommendationScores.get("dataFabric") + 20);
+        recommendation.recommendationScores.put("dataMesh", recommendation.recommendationScores.get("dataMesh") + 20);
+end
+
+rule "Akış Verisi - Hayır" // data lake eklenebilr !!!!!!,
+    when
+        CreateUserDataDto(question.questionKey.equals("Akış Verisi")) and CreateUserDataDto(userData.equals("Hayır"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+    then
+        recommendation.recommendationScores.put("DWH", recommendation.recommendationScores.get("DWH") + 20);
+        recommendation.recommendationScores.put("modernDataWarehouse", recommendation.recommendationScores.get("modernDataWarehouse") + 20);
+end
+
+rule "Veri Hacmi - Küçük veya orta ölçekli (1-10TB)"
+    when
+        CreateUserDataDto(question.questionKey.equals("Veri Hacmi")) and CreateUserDataDto(userData.equals("Küçük veya orta ölçekli (1-10TB)"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+    then
+        recommendation.recommendationScores.put("DWH", recommendation.recommendationScores.get("DWH") + 35);
+        recommendation.recommendationScores.put("modernDataWarehouse", recommendation.recommendationScores.get("modernDataWarehouse") + 35);
+end
+
+rule "Veri Hacmi - Büyük ölçekli (10 TB - 1 PB)"
+    when
+        CreateUserDataDto(question.questionKey.equals("Veri Hacmi")) and CreateUserDataDto(userData.equals("Büyük ölçekli (10 TB - 1 PB)"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+    then
+        recommendation.recommendationScores.put("dataLakehouse", recommendation.recommendationScores.get("dataLakehouse") + 35);
+        recommendation.recommendationScores.put("dataFabric", recommendation.recommendationScores.get("dataFabric") + 35);
+        recommendation.recommendationScores.put("dataLake", recommendation.recommendationScores.get("dataLake") + 35);
+end
+
+rule "Veri Hacmi - Çok büyük ölçekli (1 PB ve üzeri)"
+    when
+        CreateUserDataDto(question.questionKey.equals("Veri Hacmi")) and CreateUserDataDto(userData.equals("Çok büyük ölçekli (1 PB ve üzeri)"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+    then
+        recommendation.recommendationScores.put("dataMesh", recommendation.recommendationScores.get("dataMesh") + 55);
+end
+
+rule "Mühendis Beceri seti - Düşük beceri"
+    when
+        CreateUserDataDto(question.questionKey.equals("Mühendis Beceri seti")) and CreateUserDataDto(userData.equals("Düşük beceri"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+    then
+        recommendation.recommendationScores.put("DWH", recommendation.recommendationScores.get("DWH") + 25);
+        recommendation.recommendationScores.put("dataLake", recommendation.recommendationScores.get("dataLake") + 25);
+end
+
+rule "Mühendis Beceri seti - Orta beceri"
+    when
+        CreateUserDataDto(question.questionKey.equals("Mühendis Beceri seti")) and CreateUserDataDto(userData.equals("Orta beceri"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+    then
+        recommendation.recommendationScores.put("modernDataWarehouse", recommendation.recommendationScores.get("modernDataWarehouse") + 25);
+end
+
+rule "Mühendis Beceri seti - Orta-Yüksek beceri"
+    when
+        CreateUserDataDto(question.questionKey.equals("Mühendis Beceri seti")) and CreateUserDataDto(userData.equals("Orta-Yüksek beceri"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+    then
+        recommendation.recommendationScores.put("dataFabric", recommendation.recommendationScores.get("dataFabric") + 25);
+        recommendation.recommendationScores.put("dataLakehouse", recommendation.recommendationScores.get("dataLakehouse") + 25);
+end
+
+rule "Mühendis Beceri seti - Yüksek beceri"
+    when
+        CreateUserDataDto(question.questionKey.equals("Mühendis Beceri seti")) and CreateUserDataDto(userData.equals("Yüksek beceri"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+    then
+        recommendation.recommendationScores.put("dataMesh", recommendation.recommendationScores.get("dataMesh") + 25);
+end
+
+rule "Determine Recommendation"  ///// tek tek soru gondereceksek when submit diye bir buton yaparız o yes olursa yaparız
+    when
+        eval(true) // Her durumda çalıştırılacak bir kural
+    then
+
+        bw = recommendation.getMaxRecommendation();
+        recommendation.recommendation = bw;
+
+end

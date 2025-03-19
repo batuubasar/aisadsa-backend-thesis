@@ -1,5 +1,6 @@
 package com.aisadsa.aisadsabackend.auth.entity;
 
+import com.aisadsa.aisadsabackend.entity.Recommendation;
 import com.aisadsa.aisadsabackend.entity.UserData;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -43,6 +44,11 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user")
     private List<UserData> userResponses = new ArrayList<>();
+
+    //recommendation
+
+//    @OneToMany(mappedBy = "user")
+//    private List<Recommendation> userRecommendations = new ArrayList<>();
 
     @OneToOne(mappedBy = "user")
     private RefreshToken refreshToken;

@@ -47,4 +47,11 @@ public class UserDataController {
         return userDataService.delete(username ,questionKey);
     }
 
+    @PostMapping("/submit")
+    public ResponseEntity<String> submit(@RequestHeader("Authorization") String authHeader) {
+        String jwt = authHeader.substring(7);
+        String username = jwtService.extractUsername(jwt);
+        return userDataService.submit();
+    }
+
 }

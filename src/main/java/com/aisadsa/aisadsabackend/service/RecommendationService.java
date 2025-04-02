@@ -23,12 +23,22 @@ public class RecommendationService {
     private final RecommendationRepository recommendationRepository;
     private final KieContainer kieContainer;
     private final UserService userService;
+
+    // Singleton Pattern
     private Recommendation recommendation;
+    private KieSession kieSession;
 
     public Recommendation startSession(String username) {
         User user = userService.getUserByUsername(username);
         recommendation = new Recommendation();
         recommendation.setUser(user);
+
+        if (kieSession != null) {
+            kieSession.dispose();
+        }
+        kieSession = kieContainer.newKieSession();
+        kieSession.setGlobal("recommendation", recommendation);
+
         return recommendation;
     }
 
@@ -36,36 +46,23 @@ public class RecommendationService {
         if (recommendation == null) {
             recommendation = startSession(userData.getUser().getUsername());
         }
-
-        KieSession kieSession = kieContainer.newKieSession();
-        kieSession.setGlobal("recommendation", recommendation);
         kieSession.insert(userData);
         kieSession.fireAllRules();
-        kieSession.dispose();
         return true;
     }
 
     public ResponseEntity<String> endSession() {
+        String result = recommendation.getMaxRecommendation();
+        recommendation.setRecommendation(result);
         recommendationRepository.save(recommendation);
-        return ResponseEntity.ok("Recommendation object successfully saved to db.");
-    }
-    // ustekini kullanabiliriz her soruda tek tek gonderir.
-    /*
-    public Recommendation getRecommendation(
-            List<CreateUserDataDTO> createUserDataDTOs) {
-        Recommendation finalRecommendation = new Recommendation();
-
-        for (CreateUserDataDTO createUserDataDTO : createUserDataDTOs) {
-            // Her soru için KieSession başlatıyoruz
-            KieSession kieSession = kieContainer.newKieSession();
-            kieSession.setGlobal("questionRecommendation", finalRecommendation);
-            kieSession.insert(createUserDataDTO);
-            kieSession.fireAllRules();
+        if (kieSession != null) {
             kieSession.dispose();
+            kieSession = null;
         }
+        recommendation = null;
 
-        // En son, en yüksek öneriyi döndürüyoruz
-        return finalRecommendation;
-    }*/
-
+        // TODO result tek bir deger dondurmeyecek aslında ama suanda tek bir deger donuyor gibi kurgulandi ilerde uzun bir sonuc yazisi dondururken
+        // TODO bu kismi degistiririz
+        return ResponseEntity.ok("Recommendation object successfully saved to db as the recommendation text: " + result);
+    }
 }

@@ -16,9 +16,9 @@ import java.util.UUID;
 public class Recommendation {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "recommendation_id", nullable = false)
-    private UUID recommendation_id;
+    private int recommendation_id;
 
     @Column(name = "recommendation")
     private String recommendation;
@@ -54,6 +54,5 @@ public class Recommendation {
         }
 
         return bestRecommendation;
-
     }
 }

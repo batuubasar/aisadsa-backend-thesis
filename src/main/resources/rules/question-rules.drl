@@ -21,7 +21,7 @@ end
 
 rule "relational - negative"
     when
-        CreateUserDataRequest(questionKey.equals("relational")) and CreateUserDataRequest(userData.equals("negative"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+        UserData(question.questionKey.equals("relational")) and UserData(userData.equals("negative"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
     then
         //questionRecommendation.recommendation = "Modern Data Warehouse, Data Lake, Data Lakehouse, Data Fabric veya Data Mesh";
         recommendation.recommendationScores.put("modernDataWarehouse", recommendation.recommendationScores.get("modernDataWarehouse") +3);
@@ -32,9 +32,9 @@ rule "relational - negative"
 
 end
 
-rule "Budget - High" /// !!! buraya bütçe yüksek olsa bile orta bütçedekilere 10 puan küçük bütçeye 5 puan tarzı verilebilir
+rule "budget - high" /// !!! buraya bütçe yüksek olsa bile orta bütçedekilere 10 puan küçük bütçeye 5 puan tarzı verilebilir
     when
-        CreateUserDataDto(question.questionKey.equals("Budget")) and CreateUserDataDto(userData.equals("High"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+        UserData(question.questionKey.equals("budget")) and UserData(userData.equals("high"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
     then
         //questionRecommendation.recommendation = "DWH veya Data Mesh";
         recommendation.recommendationScores.put("DWH", recommendation.recommendationScores.get("DWH") +26);
@@ -42,9 +42,9 @@ rule "Budget - High" /// !!! buraya bütçe yüksek olsa bile orta bütçedekile
 
 end
 
-rule "Budget - Mid"
+rule "budget - mid"
     when
-        CreateUserDataDto(question.questionKey.equals("Budget")) and CreateUserDataDto(userData.equals("Mid"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+        UserData(question.questionKey.equals("budget")) and UserData(userData.equals("mid"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
     then
         //questionRecommendation.recommendation = "Modern Data Warehouse, Data Lakehouse, Data Fabric";
         recommendation.recommendationScores.put("modernDataWarehouse", recommendation.recommendationScores.get("modernDataWarehouse") +35);
@@ -53,9 +53,9 @@ rule "Budget - Mid"
         end
 
 
-rule "Budget - Low"
+rule "budget - low"
     when
-        CreateUserDataDto(question.questionKey.equals("Budget")) and CreateUserDataDto(userData.equals("Low"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+        UserData(question.questionKey.equals("budget")) and UserData(userData.equals("low"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
     then
         //questionRecommendation.recommendation = "Data Lake";
         recommendation.recommendationScores.put("dataLake", recommendation.recommendationScores.get("dataLake") + 40);
@@ -131,14 +131,4 @@ rule "Engineers Skill Set - High"
         CreateUserDataDto(question.questionKey.equals("Engineers Skill Set")) and CreateUserDataDto(userData.equals("High"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
     then
         recommendation.recommendationScores.put("dataMesh", recommendation.recommendationScores.get("dataMesh") + 25);
-end
-
-rule "Determine Recommendation"  ///// tek tek soru gondereceksek when submit diye bir buton yaparız o yes olursa yaparız
-    when
-        eval(true) // Her durumda çalıştırılacak bir kural
-    then
-
-        bw = recommendation.getMaxRecommendation();
-        recommendation.recommendation = bw;
-
 end

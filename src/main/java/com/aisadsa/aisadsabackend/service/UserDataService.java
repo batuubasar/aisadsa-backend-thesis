@@ -46,12 +46,9 @@ public class UserDataService {
         CreateUserDataDto createUserDataDto = new CreateUserDataDto(user, question, createUserDataRequest.getUserData());
         UserData userData = UserDataMapper.INSTANCE.getUserDataFromCreateUserDataDto(createUserDataDto);
 
-        userDataRepository.findByUserIdAndQuestionId(user.getId(), question.getId()).ifPresent(ud -> {throw new BadRequestException("UserData already exists!");});
+//        userDataRepository.findByUserIdAndQuestionId(user.getId(), question.getId()).ifPresent(ud -> {throw new BadRequestException("UserData already exists!");});
         userDataRepository.save(userData);
         Boolean isRecomendationSet = recommendationService.setRecommendation(userData);
-
-        // DENEME line
-        ResponseEntity<String> responseEntity = recommendationService.endSession();
 
         // TODO userData oluştururken userId ve questionId bakmak işini yapmayalım!
 
@@ -85,6 +82,10 @@ public class UserDataService {
 
         userDataRepository.delete(userData);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Question successfully deleted.");
+    }
+
+    public ResponseEntity<String> submit() {
+        return recommendationService.endSession();
     }
 }
 

@@ -1,12 +1,16 @@
 package com.aisadsa.aisadsabackend.service;
 
+import com.aisadsa.aisadsabackend.auth.entity.User;
 import com.aisadsa.aisadsabackend.core.dto.CreateUserDataDto;
 import com.aisadsa.aisadsabackend.core.dto.request.CreateUserDataRequest;
 import com.aisadsa.aisadsabackend.entity.Recommendation;
+import com.aisadsa.aisadsabackend.entity.UserData;
+import com.aisadsa.aisadsabackend.repository.RecommendationRepository;
 import lombok.RequiredArgsConstructor;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 /// kullanılmama sebebi???
 
@@ -16,20 +20,34 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RecommendationService {
 
-    //@Autowired // Field injection is not recommended diğer kodda
+    private final RecommendationRepository recommendationRepository;
     private final KieContainer kieContainer;
+    private final UserService userService;
+    private Recommendation recommendation;
 
-    //////// buradan recommendatiion donduruyoruz fonksiyonla ekstra olarak da user'i da dondurebiliriz
-    // !1!! bu sayede drl'da user'a göre bir şey yapacaksak yapabiliriz
+    public Recommendation startSession(String username) {
+        User user = userService.getUserByUsername(username);
+        recommendation = new Recommendation();
+        recommendation.setUser(user);
+        return recommendation;
+    }
 
-    public Recommendation getRecommendation(CreateUserDataRequest createUserDataDto) {
-        Recommendation recommendation = new Recommendation();
+    public Boolean setRecommendation(UserData userData) {
+        if (recommendation == null) {
+            recommendation = startSession(userData.getUser().getUsername());
+        }
+
         KieSession kieSession = kieContainer.newKieSession();
         kieSession.setGlobal("recommendation", recommendation);
-        kieSession.insert(createUserDataDto);
+        kieSession.insert(userData);
         kieSession.fireAllRules();
         kieSession.dispose();
-        return recommendation;
+        return true;
+    }
+
+    public ResponseEntity<String> endSession() {
+        recommendationRepository.save(recommendation);
+        return ResponseEntity.ok("Recommendation object successfully saved to db.");
     }
     // ustekini kullanabiliriz her soruda tek tek gonderir.
     /*

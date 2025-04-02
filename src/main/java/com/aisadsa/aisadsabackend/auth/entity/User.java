@@ -45,10 +45,8 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<UserData> userResponses = new ArrayList<>();
 
-    //recommendation
-
-//    @OneToMany(mappedBy = "user")
-//    private List<Recommendation> userRecommendations = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    private List<Recommendation> userRecommendations = new ArrayList<>();
 
     @OneToOne(mappedBy = "user")
     private RefreshToken refreshToken;

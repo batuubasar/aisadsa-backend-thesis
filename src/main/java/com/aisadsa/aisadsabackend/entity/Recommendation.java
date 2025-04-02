@@ -36,9 +36,9 @@ public class Recommendation {
             "dataMesh", 0
     ));
 
-//    @ManyToOne
-//    @JoinColumn(name = "user_id", nullable = false)
-//    private User user;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
 
     // Maksimum değeri hesaplayıp, key'i döndüren metod

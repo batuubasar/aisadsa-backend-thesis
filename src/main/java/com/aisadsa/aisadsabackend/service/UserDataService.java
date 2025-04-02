@@ -27,6 +27,7 @@ public class UserDataService {
     private final UserDataRepository userDataRepository;
     private final UserService userService;
     private final QuestionService questionService;
+    private final RecommendationService recommendationService;
 
 
     public ResponseEntity<List<UserDataResponse>> getAllDataOfUser(String username) {
@@ -47,7 +48,19 @@ public class UserDataService {
 
         userDataRepository.findByUserIdAndQuestionId(user.getId(), question.getId()).ifPresent(ud -> {throw new BadRequestException("UserData already exists!");});
         userDataRepository.save(userData);
-        return ResponseEntity.status(HttpStatus.CREATED).body("UserData successfully created.");
+        Boolean isRecomendationSet = recommendationService.setRecommendation(userData);
+
+        // DENEME line
+        ResponseEntity<String> responseEntity = recommendationService.endSession();
+
+        // TODO userData oluştururken userId ve questionId bakmak işini yapmayalım!
+
+        if (isRecomendationSet) {
+            return ResponseEntity.status(HttpStatus.CREATED).body("UserData successfully created.");
+        }
+        else {
+            throw new RuntimeException("Recomendation couldn't set!");
+        }
     }
 
     public ResponseEntity<String> update(String username, CreateUserDataRequest createUserDataRequest) {

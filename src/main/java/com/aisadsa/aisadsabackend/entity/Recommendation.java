@@ -69,6 +69,19 @@ public class Recommendation {
         }
     }
 
+    public void removeSpecificQuestion(String questionKey) {
+        Stack<String> tempStack = new Stack<>();
+        while (!questionStack.isEmpty()) {
+            String current = questionStack.pop();
+            if (current.equals(questionKey)) {
+                break;
+            }
+            tempStack.push(current);
+        }
+        while (!tempStack.isEmpty()) {
+            questionStack.push(tempStack.pop());
+        }
+    }
     public String getNextQuestionKey() {
         return questionStack.peek();
     }
@@ -76,7 +89,7 @@ public class Recommendation {
     public Boolean isQuestionStackEmpty (){
         return questionStack.isEmpty();
     }
-    // Maksimum değeri hesaplayıp, key'i döndüren metod
+
     public String getMaxRecommendation() {
         String bestRecommendation = "";
         int maxValue = -1;
@@ -87,11 +100,9 @@ public class Recommendation {
                 bestRecommendation = entry.getKey();
             }
         }
-
         return bestRecommendation;
     }
 
-    // Bütün mesajları birleştiren metod
     public String getAllMessage() {
         StringBuilder combinedMessage = new StringBuilder();
         for (String message : recommendationMessages.values()) {

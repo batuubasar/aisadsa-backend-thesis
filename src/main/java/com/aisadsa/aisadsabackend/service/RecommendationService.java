@@ -53,7 +53,9 @@ public class RecommendationService {
 
     public ResponseEntity<String> endSession() {
         String result = recommendation.getMaxRecommendation();
+        String recommendationMessage = recommendation.getAllMessage();
         recommendation.setRecommendation(result);
+        recommendation.setRecommendation_message(recommendationMessage);
         recommendationRepository.save(recommendation);
         if (kieSession != null) {
             kieSession.dispose();
@@ -63,6 +65,6 @@ public class RecommendationService {
 
         // TODO result tek bir deger dondurmeyecek aslında ama suanda tek bir deger donuyor gibi kurgulandi ilerde uzun bir sonuc yazisi dondururken
         // TODO bu kismi degistiririz
-        return ResponseEntity.ok("Recommendation object successfully saved to db as the recommendation text: " + result);
+        return ResponseEntity.ok("Recommendation object successfully saved to db as the recommendation text: " + result + ". " + recommendationMessage);
     }
 }

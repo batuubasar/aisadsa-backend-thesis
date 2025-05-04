@@ -23,6 +23,9 @@ public class Recommendation {
     @Column(name = "recommendation")
     private String recommendation;
 
+    @Column(name = "recommendation_message")
+    private String recommendation_message;
+
     @ElementCollection
     @CollectionTable(name = "recommendation_scores", joinColumns = @JoinColumn(name = "recommendation_id"))
     @MapKeyColumn(name = "category")
@@ -34,6 +37,15 @@ public class Recommendation {
             "dataLakehouse", 0,
             "dataFabric", 0,
             "dataMesh", 0
+    ));
+
+    @ElementCollection
+    @CollectionTable(name = "recommendation_messages", joinColumns = @JoinColumn(name = "recommendation_id"))
+    @MapKeyColumn(name = "category")
+    @Column(name = "message")
+    private Map<String, String> recommendationMessages = new HashMap<>(Map.of(
+            "streamingType", "",
+            "cloudUsage", ""
     ));
 
     @ManyToOne
@@ -54,5 +66,16 @@ public class Recommendation {
         }
 
         return bestRecommendation;
+    }
+
+    // Bütün mesajları birleştiren metod
+    public String getAllMessage() {
+        StringBuilder combinedMessage = new StringBuilder();
+        for (String message : recommendationMessages.values()) {
+            if (message != null && !message.isBlank()) {
+                combinedMessage.append(message).append(" ");
+            }
+        }
+        return combinedMessage.toString().trim();
     }
 }

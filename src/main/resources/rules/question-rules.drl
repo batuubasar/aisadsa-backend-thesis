@@ -1,7 +1,12 @@
 import com.aisadsa.aisadsabackend.core.dto.CreateUserDataDto;
 global  com.aisadsa.aisadsabackend.entity.Recommendation recommendation;
+
+// SİL İŞE YARAMAZSAAAAAAAAAAAAAAAAAAAAAAAAAAA !!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11
+// import com.aisadsa.aisadsabackend.entity.Recommendation
+
 import com.aisadsa.aisadsabackend.core.dto.request.CreateUserDataRequest;
-import com.aisadsa.aisadsabackend.entity.UserData;
+import com.aisadsa.aisadsabackend.entity.UserData
 
 // TODO submit butonu ekle, submit yapınca en son en alttaki değerlendirme yapılmalı. Şuanda her durumda çalışıyor,
 // TODO her durumda çalışmamalı!!
@@ -10,9 +15,181 @@ import com.aisadsa.aisadsabackend.entity.UserData;
 // akış verisi data lake eklenebilr ????
 dialect "mvel"
 
+// ÇOK ONEMLİ SORULARIN CEVAPLARI FARKLI OLMALI HEP YES DEĞİL YES-RELATIONAL TARZI
+// CLOUD - NONRELATIONAL CEVAPLAYINCA 2 KERE YES ALGILIYOR 15+15 30 YAPIYOR 2 KERE YES ALGILAYIP CLOUDDA 2 TANE METIN YAPIYO
+// VE .equals(userdata.equals(question.optional1) de sorun yaratıyor
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+rule "nonRelationalUsage - Yes"
+    when
+        UserData(question.questionKey.equals("nonRelationalUsage")) and UserData(userData.equals("Yes, large volumes and diverse formats of non-relational data will be used."))//// !!! diGer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+    then
+        recommendation.recommendationScores.put("modernDataWarehouse", recommendation.recommendationScores.get("modernDataWarehouse") + 15);
+        recommendation.recommendationScores.put("dataLake", recommendation.recommendationScores.get("dataLake") + 15);
+        recommendation.recommendationScores.put("dataLakehouse", recommendation.recommendationScores.get("dataLakehouse") + 15);
+        recommendation.recommendationScores.put("dataFabric", recommendation.recommendationScores.get("dataFabric") + 15);
+        recommendation.recommendationScores.put("dataMesh", recommendation.recommendationScores.get("dataMesh") + 15);
+end
+
+rule "nonRelationalUsage - No"
+    when
+        UserData(question.questionKey.equals("nonRelationalUsage")) and UserData(userData.equals("No, all data will be relational."))
+    then
+        recommendation.recommendationScores.put("DWH", recommendation.recommendationScores.get("DWH") + 45);
+end
+
+rule "storageSize - Small to medium scale (1–10 TB)"
+    when
+        UserData(question.questionKey.equals("storageSize")) and UserData(userData.equals("Small to medium scale (1–10 TB)"))
+    then
+        recommendation.recommendationScores.put("DWH", recommendation.recommendationScores.get("DWH") + 10);
+        recommendation.recommendationScores.put("modernDataWarehouse", recommendation.recommendationScores.get("modernDataWarehouse") + 10);
+end
+
+rule "storageSize - Large scale (10 TB – 1 PB)"
+    when
+        UserData(question.questionKey.equals("storageSize")) and UserData(userData.equals("Large scale (10 TB – 1 PB)"))
+    then
+        recommendation.recommendationScores.put("dataLake", recommendation.recommendationScores.get("dataLake") + 10);
+        recommendation.recommendationScores.put("dataLakehouse", recommendation.recommendationScores.get("dataLakehouse") + 10);
+        recommendation.recommendationScores.put("dataFabric", recommendation.recommendationScores.get("dataFabric") + 10);
+end
+
+rule "storageSize - Very large scale (1 PB and above)"
+    when
+        UserData(question.questionKey.equals("storageSize")) and UserData(userData.equals("Very large scale (1 PB and above)"))
+    then
+        recommendation.recommendationScores.put("dataMesh", recommendation.recommendationScores.get("dataMesh") + 20);
+end
+
+rule "streaming - Yes"
+    when
+        UserData(question.questionKey.equals("streaming")) and UserData(userData.equals("Yes, it will require real-time/streaming data processing"))
+    then
+        recommendation.recommendationScores.put("dataLake", recommendation.recommendationScores.get("dataLake") + 20);
+        recommendation.recommendationScores.put("dataLakehouse", recommendation.recommendationScores.get("dataLakehouse") + 20);
+        recommendation.recommendationScores.put("dataFabric", recommendation.recommendationScores.get("dataFabric") + 20);
+        recommendation.recommendationScores.put("dataMesh", recommendation.recommendationScores.get("dataMesh") + 20);
+end
+
+rule "streaming - No"
+    when
+        UserData(question.questionKey.equals("streaming")) and UserData(userData.equals("No, it will not require such processing"))
+    then
+        recommendation.recommendationScores.put("modernDataWarehouse", recommendation.recommendationScores.get("modernDataWarehouse") + 20);
+        recommendation.recommendationScores.put("DWH", recommendation.recommendationScores.get("DWH") + 20);
+end
+
+rule "streamingType - Yes"
+    when
+        UserData(question.questionKey.equals("streamingType")) and UserData(userData.equals("Yes, only real-time"))
+    then
+    // TODO detayi yap
+        recommendation.recommendationMessages.put("streamingType", "Streaming Type Yes Message.");
+end
+
+rule "streamingType - No"
+    when
+        UserData(question.questionKey.equals("streamingType")) and UserData(userData.equals("No, batch processing will be involved as well"))
+    then
+    // TODO
+        recommendation.recommendationMessages.put("streamingType", "Streaming Type No Message.");
+end
+
+rule "budget - Limited budget"
+    when
+        UserData(question.questionKey.equals("budget")) and UserData(userData.equals("Limited budget"))
+    then
+        recommendation.recommendationScores.put("modernDataWarehouse", recommendation.recommendationScores.get("modernDataWarehouse") + 10);
+        recommendation.recommendationScores.put("dataLake", recommendation.recommendationScores.get("dataLake") + 10);
+        recommendation.recommendationScores.put("dataLakehouse", recommendation.recommendationScores.get("dataLakehouse") + 10);
+end
+
+rule "budget - Flexible or high budget"
+    when
+        UserData(question.questionKey.equals("budget")) and UserData(userData.equals("Flexible or high budget"))
+    then
+        recommendation.recommendationScores.put("DWH", recommendation.recommendationScores.get("DWH") + 10);
+        recommendation.recommendationScores.put("dataFabric", recommendation.recommendationScores.get("dataFabric") + 10);
+        recommendation.recommendationScores.put("dataMesh", recommendation.recommendationScores.get("dataMesh") + 10);
+end
+
+rule "engineeringSkills - Foundational"
+    when
+        UserData(question.questionKey.equals("engineeringSkills")) and UserData(userData.equals("Foundational – Basic experience in data management and operations."))
+    then
+        recommendation.recommendationScores.put("DWH", recommendation.recommendationScores.get("DWH") + 10);
+        recommendation.recommendationScores.put("dataLake", recommendation.recommendationScores.get("dataLake") + 10);
+end
+
+rule "engineeringSkills - Intermediate"
+    when
+        UserData(question.questionKey.equals("engineeringSkills")) and UserData(userData.equals("Intermediate – Comfortable with modern data management practices and familiar with integration tools."))
+    then
+        recommendation.recommendationScores.put("modernDataWarehouse", recommendation.recommendationScores.get("modernDataWarehouse") + 10);
+        recommendation.recommendationScores.put("dataLakehouse", recommendation.recommendationScores.get("dataLakehouse") + 10);
+        recommendation.recommendationScores.put("dataFabric", recommendation.recommendationScores.get("dataFabric") + 10);
+end
+
+rule "engineeringSkills - Advanced"
+    when  // !!!! ASLINDA HEPSINE PUAN EKLENEBİLİR TEK SORUDA +10 FARK YAPMAZ AMA BOYLE COK SORUDA DAHIL ETMESEK FARK YARATABILIR
+        UserData(question.questionKey.equals("engineeringSkills")) and UserData(userData.equals("Advanced – Experienced in data integration, distributed systems and microservices-based architectures."))
+    then
+        recommendation.recommendationScores.put("dataMesh", recommendation.recommendationScores.get("dataMesh") + 10);
+end
+
+rule "architectureType - Centralized"
+    when
+        UserData(question.questionKey.equals("architectureType")) and UserData(userData.equals("Centralized – Data is managed and governed from a central platform with unified control and infrastructure."))
+    then
+        recommendation.recommendationScores.put("modernDataWarehouse", recommendation.recommendationScores.get("modernDataWarehouse") + 0);
+end
+
+rule "architectureType - Decentralized"
+    when
+        UserData(question.questionKey.equals("architectureType")) and UserData(userData.equals("Decentralized – Data ownership and processing are distributed across domains or teams."))
+    then
+        recommendation.recommendationScores.put("dataMesh", recommendation.recommendationScores.get("dataMesh") + 500);
+end
+
+rule "cloudUsage - Yes"
+    when
+        UserData(question.questionKey.equals("cloudUsage")) and UserData(userData.equals("Yes"))
+    then
+    // TODO mesaj yerine flag diyordu chat cloudUsage page bak notion
+    // bunu oylesine koydum değişicez flag belki bu mantıklı mi dusun
+        recommendation.recommendationMessages.put("cloudUsage", "Cloud Usage Yes Message.");
+end
+
+rule "her durumda"
+    when
+        //eval(true) and Recommendation(pendingQue.length ==0)
+    then
+
+end
+
+// buna gerek yok
+// /user-data/submit de yapıyoruz.
+//rule "submit" // belki gerek kalmaz service endsession kullanılabilir
+  //  when
+    //    Recommendation(recommendation_message.equals("Yes")) and $r : Recommendation()
+   // then
+      //  String result =
+//end
+//        bw = recommendation.getMaxRecommendation();
+//        recommendation.recommendation = bw;
+//        totalmessage = recommendation.getAllMessage();
+//        recommendation.recommendation_message = totalmessage;
+
+
+
+
+
+
+
+/*
 rule "relational - positive"
     when
-        UserData(question.questionKey.equals("relational")) and UserData(userData.equals("positive"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+        UserData(question.questionKey.equals("relational")) and UserData(userData.equals("positive"))
     then
         //questionRecommendation.recommendation = "DWH";
         recommendation.recommendationScores.put("DWH", recommendation.recommendationScores.get("DWH") + 50);
@@ -21,7 +198,7 @@ end
 
 rule "relational - negative"
     when
-        UserData(question.questionKey.equals("relational")) and UserData(userData.equals("negative"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+        UserData(question.questionKey.equals("relational")) and UserData(userData.equals("negative"))
     then
         //questionRecommendation.recommendation = "Modern Data Warehouse, Data Lake, Data Lakehouse, Data Fabric veya Data Mesh";
         recommendation.recommendationScores.put("modernDataWarehouse", recommendation.recommendationScores.get("modernDataWarehouse") +3);
@@ -34,7 +211,7 @@ end
 
 rule "budget - high" /// !!! buraya bütçe yüksek olsa bile orta bütçedekilere 10 puan küçük bütçeye 5 puan tarzı verilebilir
     when
-        UserData(question.questionKey.equals("budget")) and UserData(userData.equals("high"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+        UserData(question.questionKey.equals("budget")) and UserData(userData.equals("high"))
     then
         //questionRecommendation.recommendation = "DWH veya Data Mesh";
         recommendation.recommendationScores.put("DWH", recommendation.recommendationScores.get("DWH") +26);
@@ -44,7 +221,7 @@ end
 
 rule "budget - mid"
     when
-        UserData(question.questionKey.equals("budget")) and UserData(userData.equals("mid"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+        UserData(question.questionKey.equals("budget")) and UserData(userData.equals("mid"))
     then
         //questionRecommendation.recommendation = "Modern Data Warehouse, Data Lakehouse, Data Fabric";
         recommendation.recommendationScores.put("modernDataWarehouse", recommendation.recommendationScores.get("modernDataWarehouse") +35);
@@ -55,7 +232,7 @@ rule "budget - mid"
 
 rule "budget - low"
     when
-        UserData(question.questionKey.equals("budget")) and UserData(userData.equals("low"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+        UserData(question.questionKey.equals("budget")) and UserData(userData.equals("low"))
     then
         //questionRecommendation.recommendation = "Data Lake";
         recommendation.recommendationScores.put("dataLake", recommendation.recommendationScores.get("dataLake") + 40);
@@ -64,7 +241,7 @@ end
 
 rule "Streaming Data - Positive"
     when
-        CreateUserDataDto(question.questionKey.equals("Streaming Data")) and CreateUserDataDto(userData.equals("Positive"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+        CreateUserDataDto(question.questionKey.equals("Streaming Data")) and CreateUserDataDto(userData.equals("Positive"))
     then
         recommendation.recommendationScores.put("dataLakehouse", recommendation.recommendationScores.get("dataLakehouse") + 20);
         recommendation.recommendationScores.put("dataFabric", recommendation.recommendationScores.get("dataFabric") + 20);
@@ -73,7 +250,7 @@ end
 
 rule "Streaming Data - Negative" // data lake eklenebilr !!!!!!,
     when
-        CreateUserDataDto(question.questionKey.equals("Streaming Data")) and CreateUserDataDto(userData.equals("Negative"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+        CreateUserDataDto(question.questionKey.equals("Streaming Data")) and CreateUserDataDto(userData.equals("Negative"))
     then
         recommendation.recommendationScores.put("DWH", recommendation.recommendationScores.get("DWH") + 20);
         recommendation.recommendationScores.put("modernDataWarehouse", recommendation.recommendationScores.get("modernDataWarehouse") + 20);
@@ -81,7 +258,7 @@ end
 
 rule "Data Volume - Low or Mid Scale (1-10TB)"
     when
-        CreateUserDataDto(question.questionKey.equals("Data Volume")) and CreateUserDataDto(userData.equals("Low or Mid Scale (1-10TB)"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+        CreateUserDataDto(question.questionKey.equals("Data Volume")) and CreateUserDataDto(userData.equals("Low or Mid Scale (1-10TB)"))
     then
         recommendation.recommendationScores.put("DWH", recommendation.recommendationScores.get("DWH") + 35);
         recommendation.recommendationScores.put("modernDataWarehouse", recommendation.recommendationScores.get("modernDataWarehouse") + 35);
@@ -89,7 +266,7 @@ end
 
 rule "Data Volume - Large Scale (10 TB - 1 PB)"
     when
-        CreateUserDataDto(question.questionKey.equals("Data Volume")) and CreateUserDataDto(userData.equals("Big Scale (10 TB - 1 PB)"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+        CreateUserDataDto(question.questionKey.equals("Data Volume")) and CreateUserDataDto(userData.equals("Big Scale (10 TB - 1 PB)"))
     then
         recommendation.recommendationScores.put("dataLakehouse", recommendation.recommendationScores.get("dataLakehouse") + 35);
         recommendation.recommendationScores.put("dataFabric", recommendation.recommendationScores.get("dataFabric") + 35);
@@ -98,14 +275,14 @@ end
 
 rule "Data Volume - Very Large Scale (1 PB and more)"
     when
-        CreateUserDataDto(question.questionKey.equals("Data Volume")) and CreateUserDataDto(userData.equals("Very Large Scale (1 PB and more)"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+        CreateUserDataDto(question.questionKey.equals("Data Volume")) and CreateUserDataDto(userData.equals("Very Large Scale (1 PB and more)"))
     then
         recommendation.recommendationScores.put("dataMesh", recommendation.recommendationScores.get("dataMesh") + 55);
 end
 
 rule "Engineers Skill Set - Low"
     when
-        CreateUserDataDto(question.questionKey.equals("Engineers Skill Set")) and CreateUserDataDto(userData.equals("Low"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+        CreateUserDataDto(question.questionKey.equals("Engineers Skill Set")) and CreateUserDataDto(userData.equals("Low"))  //// !!! diGer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
     then
         recommendation.recommendationScores.put("DWH", recommendation.recommendationScores.get("DWH") + 25);
         recommendation.recommendationScores.put("dataLake", recommendation.recommendationScores.get("dataLake") + 25);
@@ -113,14 +290,14 @@ end
 
 rule "Engineers Skill Set - Mid"
     when
-        CreateUserDataDto(question.questionKey.equals("Engineers skill set")) and CreateUserDataDto(userData.equals("Mid"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+        CreateUserDataDto(question.questionKey.equals("Engineers skill set")) and CreateUserDataDto(userData.equals("Mid"))
     then
         recommendation.recommendationScores.put("modernDataWarehouse", recommendation.recommendationScores.get("modernDataWarehouse") + 25);
 end
 
 rule "Engineers Skill Set - Mid-High"
     when
-        CreateUserDataDto(question.questionKey.equals("Engineers Skill Set")) and CreateUserDataDto(userData.equals("Mid-High"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+        CreateUserDataDto(question.questionKey.equals("Engineers Skill Set")) and CreateUserDataDto(userData.equals("Mid-High"))
     then
         recommendation.recommendationScores.put("dataFabric", recommendation.recommendationScores.get("dataFabric") + 25);
         recommendation.recommendationScores.put("dataLakehouse", recommendation.recommendationScores.get("dataLakehouse") + 25);
@@ -128,7 +305,8 @@ end
 
 rule "Engineers Skill Set - High"
     when
-        CreateUserDataDto(question.questionKey.equals("Engineers Skill Set")) and CreateUserDataDto(userData.equals("High"))  /// !!! diğer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+        CreateUserDataDto(question.questionKey.equals("Engineers Skill Set")) and CreateUserDataDto(userData.equals("High"))
     then
         recommendation.recommendationScores.put("dataMesh", recommendation.recommendationScores.get("dataMesh") + 25);
 end
+*/

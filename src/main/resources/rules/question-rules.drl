@@ -69,6 +69,8 @@ rule "streaming - Yes"
         recommendation.recommendationScores.put("dataLakehouse", recommendation.recommendationScores.get("dataLakehouse") + 20);
         recommendation.recommendationScores.put("dataFabric", recommendation.recommendationScores.get("dataFabric") + 20);
         recommendation.recommendationScores.put("dataMesh", recommendation.recommendationScores.get("dataMesh") + 20);
+
+        recommendation.addQuestionToStack("streamingType");
 end
 
 rule "streaming - No"
@@ -149,6 +151,8 @@ rule "architectureType - Decentralized"
         UserData(question.questionKey.equals("architectureType")) and UserData(userData.equals("Decentralized – Data ownership and processing are distributed across domains or teams."))
     then
         recommendation.recommendationScores.put("dataMesh", recommendation.recommendationScores.get("dataMesh") + 500);
+        // sacma soru sil
+        //recommendation.removeQuestion();
 end
 
 rule "cloudUsage - Yes"
@@ -157,7 +161,14 @@ rule "cloudUsage - Yes"
     then
     // TODO mesaj yerine flag diyordu chat cloudUsage page bak notion
     // bunu oylesine koydum değişicez flag belki bu mantıklı mi dusun
-        recommendation.recommendationMessages.put("cloudUsage", "Cloud Usage Yes Message.");
+        String maxRecommendation = recommendation.getMaxRecommendation();
+
+        if ("dataLake".equals(maxRecommendation)) {
+            recommendation.recommendationMessages.put("cloudUsage", "We recommend Data Lake due to your cloud usage.");
+        } else if ("dataLakeHouse".equals(maxRecommendation)) {
+            recommendation.recommendationMessages.put("cloudUsage", "We recommend DLH based on your cloud usage.");
+        }
+//        recommendation.recommendationMessages.put("cloudUsage", "Cloud Usage Yes Message.");
 end
 
 rule "her durumda"

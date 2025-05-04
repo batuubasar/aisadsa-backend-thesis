@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 /// kullanılmama sebebi???
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,6 +24,7 @@ public class RecommendationService {
     private final RecommendationRepository recommendationRepository;
     private final KieContainer kieContainer;
     private final UserService userService;
+    private final UserDataService userDataService;
 
     // Singleton Pattern
     private Recommendation recommendation;
@@ -32,6 +34,12 @@ public class RecommendationService {
         User user = userService.getUserByUsername(username);
         recommendation = new Recommendation();
         recommendation.setUser(user);
+
+        List<String> sequenceQuestionKeyList = List.of("nonRelationalUsage","storageSize","budget","architectureType","engineeringSkills","streaming","cloudUsage");
+
+        for( int i = sequenceQuestionKeyList.size() -1 ; i >= 0; i-- ){
+            recommendation.addQuestionToStack(sequenceQuestionKeyList.get(i));
+        }
 
         if (kieSession != null) {
             kieSession.dispose();
@@ -46,9 +54,21 @@ public class RecommendationService {
         if (recommendation == null) {
             recommendation = startSession(userData.getUser().getUsername());
         }
+
+        if (recommendation.isQuestionStackEmpty()) {
+            userDataService.submit();
+        }
+
+        recommendation.removeQuestion(userData.getQuestion().getQuestionKey());
+        recommendation.addQuestionToAskedQuestions(userData.getQuestion().getQuestionKey());
+
         kieSession.insert(userData);
         kieSession.fireAllRules();
         return true;
+    }
+
+    public String getNextQuestion(){
+        return recommendation.getNextQuestionKey();
     }
 
     public ResponseEntity<String> endSession() {

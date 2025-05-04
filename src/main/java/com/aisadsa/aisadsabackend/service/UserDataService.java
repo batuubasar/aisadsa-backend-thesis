@@ -52,8 +52,10 @@ public class UserDataService {
 
         // TODO userData oluştururken userId ve questionId bakmak işini yapmayalım!
 
+        String nextQuestionKey = recommendationService.getNextQuestion();
+
         if (isRecomendationSet) {
-            return ResponseEntity.status(HttpStatus.CREATED).body("UserData successfully created.");
+            return ResponseEntity.status(HttpStatus.CREATED).body(nextQuestionKey);
         }
         else {
             throw new RuntimeException("Recomendation couldn't set!");

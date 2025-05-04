@@ -5,9 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "recommendations")
@@ -52,7 +50,32 @@ public class Recommendation {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Transient
+    private Stack<String> questionStack = new Stack<>();
+    @Transient
+    private Set<String> askedQuestions = new HashSet<>();
 
+    public void addQuestionToStack(String questionKey) {
+        questionStack.push(questionKey);
+    }
+
+    public void addQuestionToAskedQuestions(String questionKey) {
+        askedQuestions.add(questionKey);
+    }
+
+    public void removeQuestion(String questionKey) {
+        if (!questionStack.isEmpty() && questionStack.peek().equals(questionKey)) {
+            questionStack.pop();
+        }
+    }
+
+    public String getNextQuestionKey() {
+        return questionStack.peek();
+    }
+
+    public Boolean isQuestionStackEmpty (){
+        return questionStack.isEmpty();
+    }
     // Maksimum değeri hesaplayıp, key'i döndüren metod
     public String getMaxRecommendation() {
         String bestRecommendation = "";

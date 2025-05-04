@@ -24,7 +24,6 @@ public class RecommendationService {
     private final RecommendationRepository recommendationRepository;
     private final KieContainer kieContainer;
     private final UserService userService;
-    private final UserDataService userDataService;
 
     // Singleton Pattern
     private Recommendation recommendation;
@@ -55,16 +54,12 @@ public class RecommendationService {
             recommendation = startSession(userData.getUser().getUsername());
         }
 
-        if (recommendation.isQuestionStackEmpty()) {
-            userDataService.submit();
-        }
-
         recommendation.removeQuestion(userData.getQuestion().getQuestionKey());
         recommendation.addQuestionToAskedQuestions(userData.getQuestion().getQuestionKey());
 
         kieSession.insert(userData);
         kieSession.fireAllRules();
-        return true;
+        return recommendation.isQuestionStackEmpty();
     }
 
     public String getNextQuestion(){

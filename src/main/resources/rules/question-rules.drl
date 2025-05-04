@@ -168,7 +168,7 @@ rule "cloudUsage - Yes"
         } else if ("dataLakeHouse".equals(maxRecommendation)) {
             recommendation.recommendationMessages.put("cloudUsage", "We recommend DLH based on your cloud usage.");
         }
-//        recommendation.recommendationMessages.put("cloudUsage", "Cloud Usage Yes Message.");
+        recommendation.recommendationMessages.put("cloudUsage", "Cloud Usage Yes Message.");
 end
 
 rule "her durumda"

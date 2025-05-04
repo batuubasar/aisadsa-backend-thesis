@@ -48,17 +48,16 @@ public class UserDataService {
 
 //        userDataRepository.findByUserIdAndQuestionId(user.getId(), question.getId()).ifPresent(ud -> {throw new BadRequestException("UserData already exists!");});
         userDataRepository.save(userData);
-        Boolean isRecomendationSet = recommendationService.setRecommendation(userData);
+        Boolean isRecommendationFinished  = recommendationService.setRecommendation(userData);
 
         // TODO userData oluştururken userId ve questionId bakmak işini yapmayalım!
 
-        String nextQuestionKey = recommendationService.getNextQuestion();
-
-        if (isRecomendationSet) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(nextQuestionKey);
+        if (isRecommendationFinished ) {
+            return submit();
         }
         else {
-            throw new RuntimeException("Recomendation couldn't set!");
+            String nextQuestionKey = recommendationService.getNextQuestion();
+            return ResponseEntity.status(HttpStatus.CREATED).body(nextQuestionKey);
         }
     }
 

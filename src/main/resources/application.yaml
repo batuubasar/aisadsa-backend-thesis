@@ -14,3 +14,12 @@ spring:
   servlet:
     max-file-size: 10MB
     max-request-size: 10MB
+  ai:
+    openai:
+      api-key: ${OPEN_AI_KEY}
+      chat:
+        model: gpt-4o-mini
+  cloud:
+    function:
+      scan:
+        enabled: false

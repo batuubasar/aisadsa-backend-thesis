@@ -1,7 +1,7 @@
 package com.aisadsa.aisadsabackend.controller;
 
 import com.aisadsa.aisadsabackend.core.dto.request.ChatRequest;
-import com.aisadsa.aisadsabackend.service.AiServiceHelper;
+import com.aisadsa.aisadsabackend.service.AiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AiController {
 
-    private final AiServiceHelper aiService;
+    private final AiService aiService;
 
 
     @GetMapping("/qa")
@@ -19,8 +19,8 @@ public class AiController {
     }
 
 
-    @GetMapping("/document-generation")
+    /*@GetMapping("/document-generation")
     public String generateDocument(@RequestParam String topic) {
         return aiService.generateDocument(topic);
-    }
+    }*/
 }

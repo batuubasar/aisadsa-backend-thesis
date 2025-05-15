@@ -35,9 +35,8 @@ public class AuthService {
 
         User savedUser = userRepository.save(user);
 
-        // TODO buradan sonrasında response oluşturamıyor, bir hata var!
         var accessToken = jwtService.generateToken(savedUser);
-        var refreshToken = refreshTokenService.createRefreshToken(savedUser.getEmail());
+        var refreshToken = refreshTokenService.createRefreshToken(savedUser.getUsername());
 
         return AuthResponse.builder()
                 .accessToken(accessToken)

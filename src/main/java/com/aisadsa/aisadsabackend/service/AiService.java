@@ -1,18 +1,22 @@
 package com.aisadsa.aisadsabackend.service;
 
+import com.aisadsa.aisadsabackend.core.dto.request.ChatRequest;
 import com.aisadsa.aisadsabackend.core.dto.response.UserDataResponse;
-import com.aisadsa.aisadsabackend.service.AiTools.ContextTools;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.InMemoryChatMemory;
+import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.tool.annotation.Tool;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -20,9 +24,12 @@ public class AiService {
 
     private final ChatClient chatClient;
     private final ChatMemory chatMemory;
-    private final UserDataService userDataService;
+    @Autowired
+    private UserDataService userDataService;
+    @Autowired
+    private QuestionService questionService;
 
-    public AiService(ChatClient.Builder chatClientBuilder, UserDataService userDataService) {
+    public AiService(ChatClient.Builder chatClientBuilder) {
         this.chatMemory = new InMemoryChatMemory();
 
         this.chatClient = chatClientBuilder
@@ -31,41 +38,53 @@ public class AiService {
                         "You are a friendly chatbot with deep knowledge of data architectures. Always answer questions with the understanding that you are assisting a software engineer."
                 )
                 .build();
-
-        this.userDataService = userDataService;
     }
 
-    public String chat(String message){
-        String conversationId = "007";
+    public String chat(ChatRequest chatRequest) {
+        String sessionId = "007";
 
         return chatClient.prompt()
-                .tools(new ContextTools())
-                .user(message)
-                .advisors(a -> a.param(AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY, conversationId))
+                .messages(buildSessionContext(sessionId, chatRequest.getUsername()))
+                .user(chatRequest.getMessage())
+                .advisors(a -> a.param(AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY, sessionId))
                 .call()
                 .content();
     }
 
-    //TODO DB'den çektiğimiz veriyle session contexti oluştuyoruz
-    public String buildSessionContext(String sessionId, String username) {
-        //TODO user'ı db'den çekmeye gerek yok sanırsam onu da parametre olarak alırız chatRequestle
 
-        //TODO user id ile user_data tablosundan user'a ait tüm cevapları çekeriz,
-        // cevapların sorularını tablodaki question key ile teker teker çekebilriz
-        // ama tabii bu işi optimize etmek lazım
-        List<UserDataResponse> allDataOfUser = userDataService.getAllDataOfUser(username).getBody();
-
+    public SystemMessage buildSessionContext(String sessionId, String username) {
         String template = """
+                    Session Context of the User
+                
                     User: {username}
-                    GivenAnswers: {answers}
+                
+                    Questions:
+                    {questions}
+                
+                    Answers:
+                    {answers}
                 """;
 
-        PromptTemplate promptTemplate = new PromptTemplate(template);
+        List<UserDataResponse> allDataOfUser = Optional.ofNullable(userDataService.getAllDataOfUser(username).getBody())
+                .orElse(Collections.emptyList());
 
-        return promptTemplate.createMessage(Map.of(
-                "username", allDataOfUser.getUsername(),
-                "answers", allDataOfUser
-        ));
+        List<String> questions = allDataOfUser.stream()
+                .map(UserDataResponse::getQuestionKey)
+                .map(qKey -> questionService.getQuestionByKey(qKey).getDescription())
+                .toList();
+
+        List<String> answers = allDataOfUser.stream()
+                .map(UserDataResponse::getUserData)
+                .toList();
+
+        Map<String, Object> variables = Map.of(
+                "username", username,
+                "questions", String.join("\n", questions),
+                "answers", String.join("\n", answers)
+        );
+
+        PromptTemplate promptTemplate = new PromptTemplate(template, variables);
+        return new SystemMessage(promptTemplate.render());
     }
 
 

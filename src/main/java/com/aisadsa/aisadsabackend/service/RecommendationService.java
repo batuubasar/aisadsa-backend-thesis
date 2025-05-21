@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,11 +29,13 @@ public class RecommendationService {
     // Singleton Pattern
     private Recommendation recommendation;
     private KieSession kieSession;
+    private String adviceText;
 
     public Recommendation startSession(String username) {
         User user = userService.getUserByUsername(username);
         recommendation = new Recommendation();
         recommendation.setUser(user);
+        adviceText = null;
 
         List<String> sequenceQuestionKeyList = List.of("nonRelationalUsage","storageSize","budget","architectureType","engineeringSkills","streaming","dataVolumeRate", "mlUsage", "mdmNeed", "securityRequirement", "selfServiceBI", "slaRequirement", "dataMovementChallenge", "cloudUsage");
 
@@ -78,9 +81,16 @@ public class RecommendationService {
         }
         recommendation = null;
 
+        adviceText = "The data architecture most aligned with your needs and requirements is " + result + ".\n\n" +
+                recommendationMessage;
+
+
         // TODO result tek bir deger dondurmeyecek aslında ama suanda tek bir deger donuyor gibi kurgulandi ilerde uzun bir sonuc yazisi dondururken
         // TODO bu kismi degistiririz
-        return ResponseEntity.ok("The data architecture most aligned with your needs and requirements is " + result + ".\n\n" +
-                recommendationMessage);
+        return ResponseEntity.ok(adviceText);
+    }
+
+    public Optional<String> getAdviceText() {
+        return Optional.ofNullable(adviceText);
     }
 }

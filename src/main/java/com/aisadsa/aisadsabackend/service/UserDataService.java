@@ -52,7 +52,7 @@ public class UserDataService {
 
         // TODO userData oluştururken userId ve questionId bakmak işini yapmayalım!
 
-        if (isRecommendationFinished ) {
+        if (isRecommendationFinished) {
             return submit();
         }
         else {

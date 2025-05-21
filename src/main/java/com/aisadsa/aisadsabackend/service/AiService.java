@@ -28,6 +28,8 @@ public class AiService {
     private UserDataService userDataService;
     @Autowired
     private QuestionService questionService;
+    @Autowired
+    private RecommendationService recommendationService;
 
     public AiService(ChatClient.Builder chatClientBuilder) {
         this.chatMemory = new InMemoryChatMemory();
@@ -63,6 +65,9 @@ public class AiService {
                 
                     Answers:
                     {answers}
+                
+                    Results from the Business Rule Engine:
+                    {adviceText}
                 """;
 
         List<UserDataResponse> allDataOfUser = Optional.ofNullable(userDataService.getAllDataOfUser(username).getBody())
@@ -77,10 +82,13 @@ public class AiService {
                 .map(UserDataResponse::getUserData)
                 .toList();
 
+        String adviceText = recommendationService.getAdviceText().orElse("");
+
         Map<String, Object> variables = Map.of(
                 "username", username,
                 "questions", String.join("\n", questions),
-                "answers", String.join("\n", answers)
+                "answers", String.join("\n", answers),
+                "adviceText", adviceText
         );
 
         PromptTemplate promptTemplate = new PromptTemplate(template, variables);

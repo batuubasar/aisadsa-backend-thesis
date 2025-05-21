@@ -43,7 +43,7 @@ public class AiService {
     }
 
     public String chat(ChatRequest chatRequest) {
-        String sessionId = "007";
+        String sessionId = chatRequest.getSessionId();
 
         return chatClient.prompt()
                 .messages(buildSessionContext(sessionId, chatRequest.getUsername()))

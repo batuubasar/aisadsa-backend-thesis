@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import java.util.*;
 
+import static java.util.Map.entry;
+
 @Entity
 @Table(name = "recommendations")
 @NoArgsConstructor
@@ -21,7 +23,7 @@ public class Recommendation {
     @Column(name = "recommendation")
     private String recommendation;
 
-    @Column(name = "recommendation_message")
+    @Column(name = "recommendation_message", columnDefinition = "TEXT")
     private String recommendation_message;
 
     @ElementCollection
@@ -29,22 +31,34 @@ public class Recommendation {
     @MapKeyColumn(name = "category")
     @Column(name = "score")
     private Map<String, Integer> recommendationScores = new HashMap<>(Map.of(
-            "DWH", 0,
-            "modernDataWarehouse", 0,
-            "dataLake", 0,
-            "dataLakehouse", 0,
-            "dataFabric", 0,
-            "dataMesh", 0
+            "Data Warehouse", 0,
+            "Modern Data Warehouse", 0,
+            "Data Lake", 0,
+            "Data Lakehouse", 0,
+            "Data Fabric", 0,
+            "Data Mesh", 0
     ));
 
     @ElementCollection
     @CollectionTable(name = "recommendation_messages", joinColumns = @JoinColumn(name = "recommendation_id"))
     @MapKeyColumn(name = "category")
-    @Column(name = "message")
-    private Map<String, String> recommendationMessages = new HashMap<>(Map.of(
-            "streamingType", "",
-            "cloudUsage", ""
+    @Column(name = "message", columnDefinition = "TEXT")
+    private Map<String, String> recommendationMessages = new HashMap<>(Map.ofEntries(
+            entry("streamingType", ""),
+            entry("updateFrequency", ""),
+            entry("mlUsage", ""),
+            entry("mdmNeed", ""),
+            entry("criticalConfidentiality", ""),
+            entry("selfServiceBI", ""),
+            entry("dashboardUsage", ""),
+            entry("slaRequirement", ""),
+            entry("availabilityRequirement", ""),
+            entry("customerAccess", ""),
+            entry("dataMovementChallenge", ""),
+            entry("cloudUsage", "")
     ));
+    // (Map.of kullanıyorduk 10dan fazla key veremiyorduk ondan değiştik. versiona baglı hata verebeilir yenisi
+
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

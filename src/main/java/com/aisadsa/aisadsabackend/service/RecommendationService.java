@@ -34,7 +34,7 @@ public class RecommendationService {
         recommendation = new Recommendation();
         recommendation.setUser(user);
 
-        List<String> sequenceQuestionKeyList = List.of("nonRelationalUsage","storageSize","budget","architectureType","engineeringSkills","streaming","cloudUsage");
+        List<String> sequenceQuestionKeyList = List.of("nonRelationalUsage","storageSize","budget","architectureType","engineeringSkills","streaming","dataVolumeRate", "mlUsage", "mdmNeed", "securityRequirement", "selfServiceBI", "slaRequirement", "dataMovementChallenge", "cloudUsage");
 
         for( int i = sequenceQuestionKeyList.size() -1 ; i >= 0; i-- ){
             recommendation.addQuestionToStack(sequenceQuestionKeyList.get(i));
@@ -80,6 +80,7 @@ public class RecommendationService {
 
         // TODO result tek bir deger dondurmeyecek aslında ama suanda tek bir deger donuyor gibi kurgulandi ilerde uzun bir sonuc yazisi dondururken
         // TODO bu kismi degistiririz
-        return ResponseEntity.ok("Recommendation object successfully saved to db as the recommendation text: " + result + ". " + recommendationMessage);
+        return ResponseEntity.ok("The data architecture most aligned with your needs and requirements is " + result + ".\n\n" +
+                recommendationMessage);
     }
 }

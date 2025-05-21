@@ -1,19 +1,14 @@
 import com.aisadsa.aisadsabackend.core.dto.CreateUserDataDto;
 global  com.aisadsa.aisadsabackend.entity.Recommendation recommendation;
-
-// SİL İŞE YARAMAZSAAAAAAAAAAAAAAAAAAAAAAAAAAA !!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11
-// import com.aisadsa.aisadsabackend.entity.Recommendation
-
 import com.aisadsa.aisadsabackend.core.dto.request.CreateUserDataRequest;
 import com.aisadsa.aisadsabackend.entity.UserData
-
-// TODO submit butonu ekle, submit yapınca en son en alttaki değerlendirme yapılmalı. Şuanda her durumda çalışıyor,
-// TODO her durumda çalışmamalı!!
 
 // NOT İLİŞKİSEL - EVET VE BÜTÇE YÜKSEKTEKİ COMMENTLERE BAK ve mühendisin beceri seti 3 cevap olabilr 4 yerine
 // akış verisi data lake eklenebilr ????
 dialect "mvel"
+
+// !!!! ASLINDA HEPSINE PUAN EKLENEBİLİR TEK SORUDA +10 FARK YAPMAZ AMA BOYLE COK SORUDA DAHIL ETMESEK FARK YARATABILIR
+
 
 // ÇOK ONEMLİ SORULARIN CEVAPLARI FARKLI OLMALI HEP YES DEĞİL YES-RELATIONAL TARZI
 // CLOUD - NONRELATIONAL CEVAPLAYINCA 2 KERE YES ALGILIYOR 15+15 30 YAPIYOR 2 KERE YES ALGILAYIP CLOUDDA 2 TANE METIN YAPIYO
@@ -23,301 +18,481 @@ rule "nonRelationalUsage - Yes"
     when
         UserData(question.questionKey.equals("nonRelationalUsage")) and UserData(userData.equals("Yes, large volumes and diverse formats of non-relational data will be used."))//// !!! diGer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
     then
-        recommendation.recommendationScores.put("modernDataWarehouse", recommendation.recommendationScores.get("modernDataWarehouse") + 15);
-        recommendation.recommendationScores.put("dataLake", recommendation.recommendationScores.get("dataLake") + 15);
-        recommendation.recommendationScores.put("dataLakehouse", recommendation.recommendationScores.get("dataLakehouse") + 15);
-        recommendation.recommendationScores.put("dataFabric", recommendation.recommendationScores.get("dataFabric") + 15);
-        recommendation.recommendationScores.put("dataMesh", recommendation.recommendationScores.get("dataMesh") + 15);
+        recommendation.recommendationScores.put("Modern Data Warehouse", recommendation.recommendationScores.get("Modern Data Warehouse") + 10); //15
+        recommendation.recommendationScores.put("Data Lake", recommendation.recommendationScores.get("Data Lake") + 15);
+        recommendation.recommendationScores.put("Data Lakehouse", recommendation.recommendationScores.get("Data Lakehouse") + 15);
+        recommendation.recommendationScores.put("Data Fabric", recommendation.recommendationScores.get("Data Fabric") + 15);
+        recommendation.recommendationScores.put("Data Mesh", recommendation.recommendationScores.get("Data Mesh") + 15);
 end
 
 rule "nonRelationalUsage - No"
     when
         UserData(question.questionKey.equals("nonRelationalUsage")) and UserData(userData.equals("No, all data will be relational."))
     then
-        recommendation.recommendationScores.put("DWH", recommendation.recommendationScores.get("DWH") + 45);
+        recommendation.recommendationScores.put("Data Warehouse", recommendation.recommendationScores.get("Data Warehouse") + 45);
 end
 
 rule "storageSize - Small to medium scale (1–10 TB)"
     when
         UserData(question.questionKey.equals("storageSize")) and UserData(userData.equals("Small to medium scale (1–10 TB)"))
     then
-        recommendation.recommendationScores.put("DWH", recommendation.recommendationScores.get("DWH") + 10);
-        recommendation.recommendationScores.put("modernDataWarehouse", recommendation.recommendationScores.get("modernDataWarehouse") + 10);
+        recommendation.recommendationScores.put("Data Warehouse", recommendation.recommendationScores.get("Data Warehouse") + 10);
+        recommendation.recommendationScores.put("Modern Data Warehouse", recommendation.recommendationScores.get("Modern Data Warehouse") + 10);
 end
 
 rule "storageSize - Large scale (10 TB – 1 PB)"
     when
         UserData(question.questionKey.equals("storageSize")) and UserData(userData.equals("Large scale (10 TB – 1 PB)"))
     then
-        recommendation.recommendationScores.put("dataLake", recommendation.recommendationScores.get("dataLake") + 10);
-        recommendation.recommendationScores.put("dataLakehouse", recommendation.recommendationScores.get("dataLakehouse") + 10);
-        recommendation.recommendationScores.put("dataFabric", recommendation.recommendationScores.get("dataFabric") + 10);
+        recommendation.recommendationScores.put("Data Lake", recommendation.recommendationScores.get("Data Lake") + 10);
+        recommendation.recommendationScores.put("Data Lakehouse", recommendation.recommendationScores.get("Data Lakehouse") + 15);//10
+        recommendation.recommendationScores.put("Data Fabric", recommendation.recommendationScores.get("Data Fabric") + 15); //10
 end
 
 rule "storageSize - Very large scale (1 PB and above)"
     when
         UserData(question.questionKey.equals("storageSize")) and UserData(userData.equals("Very large scale (1 PB and above)"))
     then
-        recommendation.recommendationScores.put("dataMesh", recommendation.recommendationScores.get("dataMesh") + 20);
+        recommendation.recommendationScores.put("Data Mesh", recommendation.recommendationScores.get("Data Mesh") + 20);
 end
 
 rule "streaming - Yes"
     when
         UserData(question.questionKey.equals("streaming")) and UserData(userData.equals("Yes, it will require real-time/streaming data processing"))
     then
-        recommendation.recommendationScores.put("dataLake", recommendation.recommendationScores.get("dataLake") + 20);
-        recommendation.recommendationScores.put("dataLakehouse", recommendation.recommendationScores.get("dataLakehouse") + 20);
-        recommendation.recommendationScores.put("dataFabric", recommendation.recommendationScores.get("dataFabric") + 20);
-        recommendation.recommendationScores.put("dataMesh", recommendation.recommendationScores.get("dataMesh") + 20);
+        recommendation.recommendationScores.put("Data Lake", recommendation.recommendationScores.get("Data Lake") + 20);
+        recommendation.recommendationScores.put("Data Lakehouse", recommendation.recommendationScores.get("Data Lakehouse") + 20);
+        recommendation.recommendationScores.put("Data Fabric", recommendation.recommendationScores.get("Data Fabric") + 20);
+        recommendation.recommendationScores.put("Data Mesh", recommendation.recommendationScores.get("Data Mesh") + 20);
 
+        recommendation.addQuestionToStack("updateFrequency");
         recommendation.addQuestionToStack("streamingType");
+
 end
 
 rule "streaming - No"
     when
         UserData(question.questionKey.equals("streaming")) and UserData(userData.equals("No, it will not require such processing"))
     then
-        recommendation.recommendationScores.put("modernDataWarehouse", recommendation.recommendationScores.get("modernDataWarehouse") + 20);
-        recommendation.recommendationScores.put("DWH", recommendation.recommendationScores.get("DWH") + 20);
+        recommendation.recommendationScores.put("Modern Data Warehouse", recommendation.recommendationScores.get("Modern Data Warehouse") + 20);
+        recommendation.recommendationScores.put("Data Warehouse", recommendation.recommendationScores.get("Data Warehouse") + 20);
 end
 
 rule "streamingType - Yes"
     when
-        UserData(question.questionKey.equals("streamingType")) and UserData(userData.equals("Yes, only real-time"))
+        UserData(question.questionKey.equals("streamingType")) and UserData(userData.equals("Yes, only real-time streaming"))
     then
-    // TODO detayi yap
-        recommendation.recommendationMessages.put("streamingType", "Streaming Type Yes Message.");
+        recommendation.recommendationMessages.put("streamingType", "For scenarios requiring only real-time data processing, the Kappa architecture provides a simple and effective solution by processing data through a single streaming pipeline.");
 end
 
 rule "streamingType - No"
     when
-        UserData(question.questionKey.equals("streamingType")) and UserData(userData.equals("No, batch processing will be involved as well"))
+        UserData(question.questionKey.equals("streamingType")) and UserData(userData.equals("No, both batch and real-time processing will be needed"))
     then
-    // TODO
-        recommendation.recommendationMessages.put("streamingType", "Streaming Type No Message.");
+        recommendation.recommendationMessages.put("streamingType", "When both real-time and batch data processing are required, the Lambda architecture addresses these needs in a balanced way through two separate layers.");
+end
+
+rule "updateFrequency - Real-time or near real-time updates are required."
+    when
+        UserData(question.questionKey.equals("updateFrequency")) and UserData(userData.equals("Real-time or near real-time updates are required."))
+    then
+        recommendation.recommendationScores.put("Data Fabric", recommendation.recommendationScores.get("Data Fabric") + 15);
+        recommendation.recommendationScores.put("Data Lakehouse", recommendation.recommendationScores.get("Data Lakehouse") + 10);
+        recommendation.recommendationScores.put("Data Mesh", recommendation.recommendationScores.get("Data Mesh") + 10);
+
+        recommendation.recommendationMessages.put("updateFrequency",
+    "Real-time or frequently updated data benefits from architectures that support stream ingestion, event-driven processing and low-latency data handling.");
+
+end
+
+rule "updateFrequency - Hourly or daily batch updates are sufficient."
+    when
+        UserData(question.questionKey.equals("updateFrequency")) and UserData(userData.equals("Hourly or daily batch updates are sufficient."))
+    then
+        recommendation.recommendationScores.put("Data Warehouse", recommendation.recommendationScores.get("Data Warehouse") + 10);
+        recommendation.recommendationScores.put("Modern Data Warehouse", recommendation.recommendationScores.get("Modern Data Warehouse") + 10);
+
+        recommendation.recommendationMessages.put("updateFrequency",
+    "For systems with scheduled batch updates, traditional data architectures that rely on periodic ingestion and job orchestration can offer sufficient performance and simplicity.");
+
 end
 
 rule "budget - Limited budget"
     when
         UserData(question.questionKey.equals("budget")) and UserData(userData.equals("Limited budget"))
     then
-        recommendation.recommendationScores.put("modernDataWarehouse", recommendation.recommendationScores.get("modernDataWarehouse") + 10);
-        recommendation.recommendationScores.put("dataLake", recommendation.recommendationScores.get("dataLake") + 10);
-        recommendation.recommendationScores.put("dataLakehouse", recommendation.recommendationScores.get("dataLakehouse") + 10);
+        recommendation.recommendationScores.put("Modern Data Warehouse", recommendation.recommendationScores.get("Modern Data Warehouse") + 10);
+        recommendation.recommendationScores.put("Data Lake", recommendation.recommendationScores.get("Data Lake") + 15); //10
+        recommendation.recommendationScores.put("Data Lakehouse", recommendation.recommendationScores.get("Data Lakehouse") + 10);
 end
 
 rule "budget - Flexible or high budget"
     when
         UserData(question.questionKey.equals("budget")) and UserData(userData.equals("Flexible or high budget"))
     then
-        recommendation.recommendationScores.put("DWH", recommendation.recommendationScores.get("DWH") + 10);
-        recommendation.recommendationScores.put("dataFabric", recommendation.recommendationScores.get("dataFabric") + 10);
-        recommendation.recommendationScores.put("dataMesh", recommendation.recommendationScores.get("dataMesh") + 10);
+        recommendation.recommendationScores.put("Data Warehouse", recommendation.recommendationScores.get("Data Warehouse") + 10);
+        recommendation.recommendationScores.put("Data Fabric", recommendation.recommendationScores.get("Data Fabric") + 10);
+        recommendation.recommendationScores.put("Data Mesh", recommendation.recommendationScores.get("Data Mesh") + 10);
 end
 
 rule "engineeringSkills - Foundational"
     when
         UserData(question.questionKey.equals("engineeringSkills")) and UserData(userData.equals("Foundational – Basic experience in data management and operations."))
     then
-        recommendation.recommendationScores.put("DWH", recommendation.recommendationScores.get("DWH") + 10);
-        recommendation.recommendationScores.put("dataLake", recommendation.recommendationScores.get("dataLake") + 10);
+        recommendation.recommendationScores.put("Data Warehouse", recommendation.recommendationScores.get("Data Warehouse") + 10);
+        recommendation.recommendationScores.put("Data Lake", recommendation.recommendationScores.get("Data Lake") + 10);
 end
 
 rule "engineeringSkills - Intermediate"
     when
         UserData(question.questionKey.equals("engineeringSkills")) and UserData(userData.equals("Intermediate – Comfortable with modern data management practices and familiar with integration tools."))
     then
-        recommendation.recommendationScores.put("modernDataWarehouse", recommendation.recommendationScores.get("modernDataWarehouse") + 10);
-        recommendation.recommendationScores.put("dataLakehouse", recommendation.recommendationScores.get("dataLakehouse") + 10);
-        recommendation.recommendationScores.put("dataFabric", recommendation.recommendationScores.get("dataFabric") + 10);
+        recommendation.recommendationScores.put("Modern Data Warehouse", recommendation.recommendationScores.get("Modern Data Warehouse") + 10);
+        recommendation.recommendationScores.put("Data Lakehouse", recommendation.recommendationScores.get("Data Lakehouse") + 10);
+        recommendation.recommendationScores.put("Data Fabric", recommendation.recommendationScores.get("Data Fabric") + 10);
 end
 
 rule "engineeringSkills - Advanced"
-    when  // !!!! ASLINDA HEPSINE PUAN EKLENEBİLİR TEK SORUDA +10 FARK YAPMAZ AMA BOYLE COK SORUDA DAHIL ETMESEK FARK YARATABILIR
+    when
         UserData(question.questionKey.equals("engineeringSkills")) and UserData(userData.equals("Advanced – Experienced in data integration, distributed systems and microservices-based architectures."))
     then
-        recommendation.recommendationScores.put("dataMesh", recommendation.recommendationScores.get("dataMesh") + 10);
+        recommendation.recommendationScores.put("Data Mesh", recommendation.recommendationScores.get("Data Mesh") + 10);
 end
 
 rule "architectureType - Centralized"
     when
         UserData(question.questionKey.equals("architectureType")) and UserData(userData.equals("Centralized – Data is managed and governed from a central platform with unified control and infrastructure."))
     then
-        recommendation.recommendationScores.put("modernDataWarehouse", recommendation.recommendationScores.get("modernDataWarehouse") + 0);
+        recommendation.recommendationScores.put("Data Warehouse", recommendation.recommendationScores.get("Data Warehouse") + 10);
+        recommendation.recommendationScores.put("Data Lake", recommendation.recommendationScores.get("Data Lake") + 10);
+        recommendation.recommendationScores.put("Modern Data Warehouse", recommendation.recommendationScores.get("Modern Data Warehouse") + 10);
+        recommendation.recommendationScores.put("Data Lakehouse", recommendation.recommendationScores.get("Data Lakehouse") + 10);
+        recommendation.recommendationScores.put("Data Fabric", recommendation.recommendationScores.get("Data Fabric") + 10);
+        recommendation.recommendationScores.put("Data Mesh", recommendation.recommendationScores.get("Data Mesh") - 50);
+
 end
 
 rule "architectureType - Decentralized"
     when
         UserData(question.questionKey.equals("architectureType")) and UserData(userData.equals("Decentralized – Data ownership and processing are distributed across domains or teams."))
     then
-        recommendation.recommendationScores.put("dataMesh", recommendation.recommendationScores.get("dataMesh") + 500);
+        recommendation.recommendationScores.put("Data Mesh", recommendation.recommendationScores.get("Data Mesh") + 500);
         // sacma soru sil
-        //recommendation.removeQuestion();
+        //recommendation.removespeecifisQuestion();
 end
 
 rule "cloudUsage - Yes"
     when
         UserData(question.questionKey.equals("cloudUsage")) and UserData(userData.equals("Yes"))
     then
-    // TODO mesaj yerine flag diyordu chat cloudUsage page bak notion
-    // bunu oylesine koydum değişicez flag belki bu mantıklı mi dusun
         String maxRecommendation = recommendation.getMaxRecommendation();
-
-        if ("dataLake".equals(maxRecommendation)) {
-            recommendation.recommendationMessages.put("cloudUsage", "We recommend Data Lake due to your cloud usage.");
-        } else if ("dataLakeHouse".equals(maxRecommendation)) {
-            recommendation.recommendationMessages.put("cloudUsage", "We recommend DLH based on your cloud usage.");
+        if ("Data Warehouse".equals(maxRecommendation)) {
+            recommendation.recommendationMessages.put("cloudUsage",
+                "Cloud-based data warehouse solutions include Amazon Redshift (AWS), Google BigQuery (GCP), and Azure Synapse Analytics (Azure).");
+        } else if ("Data Lake".equals(maxRecommendation)) {
+            recommendation.recommendationMessages.put("cloudUsage",
+                "Commonly used data lake services in cloud environments include Amazon S3 with Lake Formation (AWS), Azure Data Lake Storage Gen2, and Google Cloud Storage integrated with Dataproc.");
+        } else if ("Modern Data Warehouse".equals(maxRecommendation)) {
+            recommendation.recommendationMessages.put("cloudUsage",
+                "Cloud-native platforms suitable for modern data warehousing include Snowflake, Databricks Lakehouse, and Google BigQuery combined with Dataplex.");
+        } else if ("Data Lakehouse".equals(maxRecommendation)) {
+            recommendation.recommendationMessages.put("cloudUsage",
+                "Lakehouse architecture can be supported with tools such as Databricks Lakehouse, Snowflake with Unistore, and Google BigLake integrated with BigQuery.");
+        } else if ("Data Fabric".equals(maxRecommendation)) {
+            recommendation.recommendationMessages.put("cloudUsage",
+                "Cloud-enabled data fabric implementations commonly utilize solutions such as IBM Cloud Pak for Data, Talend Data Fabric, and Azure Purview integrated with Synapse.");
+        } else if ("Data Mesh".equals(maxRecommendation)) {
+            recommendation.recommendationMessages.put("cloudUsage",
+                "To implement a data mesh approach in the cloud, commonly used tools include Starburst Enterprise (Trino-based), AWS Data Mesh Toolkit, and Google Cloud Dataplex.");
         }
-        recommendation.recommendationMessages.put("cloudUsage", "Cloud Usage Yes Message.");
 end
 
-rule "her durumda"
+rule "cloudUsage - No"
     when
-        //eval(true) and Recommendation(pendingQue.length ==0)
+        UserData(question.questionKey.equals("cloudUsage")) and UserData(userData.equals("No"))
     then
-
+        recommendation.recommendationMessages.put("cloudUsage", "Cloud solutions can offer advantages such as flexibility and low initial costs; it may be beneficial to consider them in the future.");
 end
 
-// buna gerek yok
-// /user-data/submit de yapıyoruz.
-//rule "submit" // belki gerek kalmaz service endsession kullanılabilir
-  //  when
-    //    Recommendation(recommendation_message.equals("Yes")) and $r : Recommendation()
-   // then
-      //  String result =
-//end
-//        bw = recommendation.getMaxRecommendation();
-//        recommendation.recommendation = bw;
-//        totalmessage = recommendation.getAllMessage();
-//        recommendation.recommendation_message = totalmessage;
-
-
-
-
-
-
-
-/*
-rule "relational - positive"
+rule "dataVolumeRate - Low"
     when
-        UserData(question.questionKey.equals("relational")) and UserData(userData.equals("positive"))
+        UserData(question.questionKey.equals("dataVolumeRate")) and
+        UserData(userData.equals("Low – Less than 1 GB per day"))
     then
-        //questionRecommendation.recommendation = "DWH";
-        recommendation.recommendationScores.put("DWH", recommendation.recommendationScores.get("DWH") + 50);
-
+        recommendation.recommendationScores.put("Data Warehouse", recommendation.recommendationScores.get("Data Warehouse") + 10);
+        recommendation.recommendationScores.put("Modern Data Warehouse", recommendation.recommendationScores.get("Modern Data Warehouse") + 10);
 end
 
-rule "relational - negative"
+rule "dataVolumeRate - Medium"
     when
-        UserData(question.questionKey.equals("relational")) and UserData(userData.equals("negative"))
+        UserData(question.questionKey.equals("dataVolumeRate")) and
+        UserData(userData.equals("Medium – Between 1 GB and 100 GB per day"))
     then
-        //questionRecommendation.recommendation = "Modern Data Warehouse, Data Lake, Data Lakehouse, Data Fabric veya Data Mesh";
-        recommendation.recommendationScores.put("modernDataWarehouse", recommendation.recommendationScores.get("modernDataWarehouse") +3);
-        recommendation.recommendationScores.put("dataLake", recommendation.recommendationScores.get("dataLake") + 40);
-        recommendation.recommendationScores.put("dataLakehouse", recommendation.recommendationScores.get("dataLakehouse") +35);
-        recommendation.recommendationScores.put("dataFabric", recommendation.recommendationScores.get("dataFabric") +34);
-        recommendation.recommendationScores.put("dataMesh", recommendation.recommendationScores.get("dataMesh") +33);
-
+        recommendation.recommendationScores.put("Modern Data Warehouse", recommendation.recommendationScores.get("Modern Data Warehouse") + 10);
+        recommendation.recommendationScores.put("Data Lakehouse", recommendation.recommendationScores.get("Data Lakehouse") + 10);
+        recommendation.recommendationScores.put("Data Fabric", recommendation.recommendationScores.get("Data Fabric") + 10);
 end
 
-rule "budget - high" /// !!! buraya bütçe yüksek olsa bile orta bütçedekilere 10 puan küçük bütçeye 5 puan tarzı verilebilir
+rule "dataVolumeRate - High"
     when
-        UserData(question.questionKey.equals("budget")) and UserData(userData.equals("high"))
+        UserData(question.questionKey.equals("dataVolumeRate")) and
+        UserData(userData.equals("High – More than 100 GB per day"))
     then
-        //questionRecommendation.recommendation = "DWH veya Data Mesh";
-        recommendation.recommendationScores.put("DWH", recommendation.recommendationScores.get("DWH") +26);
-        recommendation.recommendationScores.put("dataMesh", recommendation.recommendationScores.get("dataMesh") +25);
-
+        recommendation.recommendationScores.put("Data Lake", recommendation.recommendationScores.get("Data Lake") + 15);
+        recommendation.recommendationScores.put("Data Lakehouse", recommendation.recommendationScores.get("Data Lakehouse") + 10);
+        recommendation.recommendationScores.put("Data Fabric", recommendation.recommendationScores.get("Data Fabric") + 10);
+        recommendation.recommendationScores.put("Data Mesh", recommendation.recommendationScores.get("Data Mesh") + 10);
 end
 
-rule "budget - mid"
+rule "mlUsage - Yes"
     when
-        UserData(question.questionKey.equals("budget")) and UserData(userData.equals("mid"))
+        UserData(question.questionKey.equals("mlUsage")) and
+        UserData(userData.equals("Yes, machine learning or advanced analytics will be performed on the data."))
     then
-        //questionRecommendation.recommendation = "Modern Data Warehouse, Data Lakehouse, Data Fabric";
-        recommendation.recommendationScores.put("modernDataWarehouse", recommendation.recommendationScores.get("modernDataWarehouse") +35);
-        recommendation.recommendationScores.put("dataLakehouse", recommendation.recommendationScores.get("dataLakehouse") +34);
-        recommendation.recommendationScores.put("dataFabric", recommendation.recommendationScores.get("dataFabric") +33);
-        end
+        recommendation.recommendationScores.put("Data Lake", recommendation.recommendationScores.get("Data Lake") + 15);
+        recommendation.recommendationScores.put("Data Lakehouse", recommendation.recommendationScores.get("Data Lakehouse") + 15);
+        recommendation.recommendationScores.put("Data Fabric", recommendation.recommendationScores.get("Data Fabric") + 10);
+        recommendation.recommendationScores.put("Data Mesh", recommendation.recommendationScores.get("Data Mesh") + 10);
+        recommendation.recommendationScores.put("Modern Data Warehouse", recommendation.recommendationScores.get("Modern Data Warehouse") + 10);
+        recommendation.recommendationScores.put("Data Warehouse", recommendation.recommendationScores.get("Data Warehouse") + 5);
 
+        recommendation.recommendationMessages.put("mlUsage", "Machine learning and predictive analytics use cases are typically better supported by architectures that offer flexible data access and high-performance processing capabilities.");
+end
 
-rule "budget - low"
+rule "mlUsage - No"
     when
-        UserData(question.questionKey.equals("budget")) and UserData(userData.equals("low"))
+        UserData(question.questionKey.equals("mlUsage")) and
+        UserData(userData.equals("No, only traditional reporting and descriptive analytics are needed."))
     then
-        //questionRecommendation.recommendation = "Data Lake";
-        recommendation.recommendationScores.put("dataLake", recommendation.recommendationScores.get("dataLake") + 40);
+        recommendation.recommendationScores.put("Data Warehouse", recommendation.recommendationScores.get("Data Warehouse") + 10);
+        recommendation.recommendationScores.put("Modern Data Warehouse", recommendation.recommendationScores.get("Modern Data Warehouse") + 5);
 
 end
 
-rule "Streaming Data - Positive"
+rule "mdmNeed - Yes"
     when
-        CreateUserDataDto(question.questionKey.equals("Streaming Data")) and CreateUserDataDto(userData.equals("Positive"))
+        UserData(question.questionKey.equals("mdmNeed")) and
+        UserData(userData.equals("Yes, MDM is a requirement for data consistency and governance."))
     then
-        recommendation.recommendationScores.put("dataLakehouse", recommendation.recommendationScores.get("dataLakehouse") + 20);
-        recommendation.recommendationScores.put("dataFabric", recommendation.recommendationScores.get("dataFabric") + 20);
-        recommendation.recommendationScores.put("dataMesh", recommendation.recommendationScores.get("dataMesh") + 20);
+        recommendation.recommendationScores.put("Data Fabric", recommendation.recommendationScores.get("Data Fabric") + 45);
+        recommendation.recommendationScores.put("Data Mesh", recommendation.recommendationScores.get("Data Mesh") + 35);
+        recommendation.recommendationScores.put("Data Lakehouse", recommendation.recommendationScores.get("Data Lakehouse") + 35);
+
+        recommendation.recommendationMessages.put("mdmNeed",
+                         "Data consistency and governance requirements can be more effectively addressed within this architectural approach, which provides advanced metadata management and centralized control mechanisms.");
+
 end
 
-rule "Streaming Data - Negative" // data lake eklenebilr !!!!!!,
+rule "mdmNeed - No"
     when
-        CreateUserDataDto(question.questionKey.equals("Streaming Data")) and CreateUserDataDto(userData.equals("Negative"))
+        UserData(question.questionKey.equals("mdmNeed")) and
+        UserData(userData.equals("No, MDM is not required at this stage."))
     then
-        recommendation.recommendationScores.put("DWH", recommendation.recommendationScores.get("DWH") + 20);
-        recommendation.recommendationScores.put("modernDataWarehouse", recommendation.recommendationScores.get("modernDataWarehouse") + 20);
+        recommendation.recommendationScores.put("Data Fabric", recommendation.recommendationScores.get("Data Fabric") - 10);
+        recommendation.recommendationScores.put("Data Mesh", recommendation.recommendationScores.get("Data Mesh") - 10);
+        recommendation.recommendationScores.put("Data Lakehouse", recommendation.recommendationScores.get("Data Lakehouse") - 10);
 end
 
-rule "Data Volume - Low or Mid Scale (1-10TB)"
+
+rule "securityRequirement - Yes, we must enforce strict security and data residency rules."
     when
-        CreateUserDataDto(question.questionKey.equals("Data Volume")) and CreateUserDataDto(userData.equals("Low or Mid Scale (1-10TB)"))
+        UserData(question.questionKey.equals("securityRequirement")) and
+        UserData(userData.equals("Yes, we must enforce strict security and data residency rules."))
     then
-        recommendation.recommendationScores.put("DWH", recommendation.recommendationScores.get("DWH") + 35);
-        recommendation.recommendationScores.put("modernDataWarehouse", recommendation.recommendationScores.get("modernDataWarehouse") + 35);
+        recommendation.recommendationScores.put("Data Fabric", recommendation.recommendationScores.get("Data Fabric") + 25);
+        recommendation.recommendationScores.put("Data Mesh", recommendation.recommendationScores.get("Data Mesh") + 20);
+        recommendation.recommendationScores.put("Data Lakehouse", recommendation.recommendationScores.get("Data Lakehouse") + 20);
+
+        recommendation.addQuestionToStack("criticalConfidentiality");
+
 end
 
-rule "Data Volume - Large Scale (10 TB - 1 PB)"
+
+rule "securityRequirement - No, general cloud or regional compliance is sufficient."
     when
-        CreateUserDataDto(question.questionKey.equals("Data Volume")) and CreateUserDataDto(userData.equals("Big Scale (10 TB - 1 PB)"))
+        UserData(question.questionKey.equals("securityRequirement")) and
+        UserData(userData.equals("No, general cloud or regional compliance is sufficient."))
     then
-        recommendation.recommendationScores.put("dataLakehouse", recommendation.recommendationScores.get("dataLakehouse") + 35);
-        recommendation.recommendationScores.put("dataFabric", recommendation.recommendationScores.get("dataFabric") + 35);
-        recommendation.recommendationScores.put("dataLake", recommendation.recommendationScores.get("dataLake") + 35);
+        recommendation.recommendationScores.put("Data Fabric", recommendation.recommendationScores.get("Data Fabric") - 5);
+        recommendation.recommendationScores.put("Data Mesh", recommendation.recommendationScores.get("Data Mesh") - 5);
+        recommendation.recommendationScores.put("Data Lakehouse", recommendation.recommendationScores.get("Data Lakehouse") - 5);
+
 end
 
-rule "Data Volume - Very Large Scale (1 PB and more)"
+
+rule "criticalConfidentiality - Yes, full isolation and on-premise infrastructure is required."
     when
-        CreateUserDataDto(question.questionKey.equals("Data Volume")) and CreateUserDataDto(userData.equals("Very Large Scale (1 PB and more)"))
+        UserData(question.questionKey.equals("criticalConfidentiality")) and
+        UserData(userData.equals("Yes, full isolation and on-premise infrastructure is required."))
     then
-        recommendation.recommendationScores.put("dataMesh", recommendation.recommendationScores.get("dataMesh") + 55);
+        recommendation.recommendationScores.put("Data Fabric", recommendation.recommendationScores.get("Data Fabric") + 10);
+        recommendation.recommendationScores.put("Data Mesh", recommendation.recommendationScores.get("Data Mesh") + 5);
+        recommendation.recommendationScores.put("Data Lakehouse", recommendation.recommendationScores.get("Data Lakehouse") + 5);
+
+        recommendation.recommendationMessages.put("criticalConfidentiality", "High-level confidentiality and data sovereignty needs may require prioritizing fully isolated, on-premise architectural solutions over cloud-based alternatives.");
+
+        recommendation.removeSpecificQuestion("cloudUsage");
 end
 
-rule "Engineers Skill Set - Low"
+
+rule "criticalConfidentiality - No, secure cloud infrastructure can be considered."
     when
-        CreateUserDataDto(question.questionKey.equals("Engineers Skill Set")) and CreateUserDataDto(userData.equals("Low"))  //// !!! diGer soruların cevap da evet olursa ama burada soru id ile gidicez oyle çözeriz
+        UserData(question.questionKey.equals("criticalConfidentiality")) and
+        UserData(userData.equals("No, secure cloud infrastructure can be considered."))
     then
-        recommendation.recommendationScores.put("DWH", recommendation.recommendationScores.get("DWH") + 25);
-        recommendation.recommendationScores.put("dataLake", recommendation.recommendationScores.get("dataLake") + 25);
+        recommendation.recommendationScores.put("Data Fabric", recommendation.recommendationScores.get("Data Fabric") + 5);
+        recommendation.recommendationScores.put("Data Mesh", recommendation.recommendationScores.get("Data Mesh") + 5);
+        recommendation.recommendationScores.put("Data Lakehouse", recommendation.recommendationScores.get("Data Lakehouse") + 5);
+
+        recommendation.recommendationMessages.put("criticalConfidentiality", "Given the emphasis on security and data sovereignty, architectural approaches that support secure cloud infrastructure may be considered.");
+
 end
 
-rule "Engineers Skill Set - Mid"
+
+rule "selfServiceBI - Yes – Users need easy access to well-modeled, structured data and intuitive reporting tools."
     when
-        CreateUserDataDto(question.questionKey.equals("Engineers skill set")) and CreateUserDataDto(userData.equals("Mid"))
+        UserData(question.questionKey.equals("selfServiceBI")) and
+        UserData(userData.equals("Yes – Users need easy access to well-modeled, structured data and intuitive reporting tools."))
     then
-        recommendation.recommendationScores.put("modernDataWarehouse", recommendation.recommendationScores.get("modernDataWarehouse") + 25);
+        recommendation.recommendationScores.put("Data Warehouse", recommendation.recommendationScores.get("Data Warehouse") + 25);
+        recommendation.recommendationScores.put("Modern Data Warehouse", recommendation.recommendationScores.get("Modern Data Warehouse") + 25);
+
+        recommendation.recommendationMessages.put("selfServiceBI",
+  "Architectures that provide well-structured and user-friendly data models are better suited for non-technical users who require intuitive reporting and guided analytics.");
+
+        recommendation.addQuestionToStack("dashboardUsage");
+
 end
 
-rule "Engineers Skill Set - Mid-High"
+
+rule "selfServiceBI - No – Users are technically proficient and can work with raw or semi-structured data directly."
     when
-        CreateUserDataDto(question.questionKey.equals("Engineers Skill Set")) and CreateUserDataDto(userData.equals("Mid-High"))
+        UserData(question.questionKey.equals("selfServiceBI")) and
+        UserData(userData.equals("No – Users are technically proficient and can work with raw or semi-structured data directly."))
     then
-        recommendation.recommendationScores.put("dataFabric", recommendation.recommendationScores.get("dataFabric") + 25);
-        recommendation.recommendationScores.put("dataLakehouse", recommendation.recommendationScores.get("dataLakehouse") + 25);
+        recommendation.recommendationScores.put("Data Lakehouse", recommendation.recommendationScores.get("Data Lakehouse") + 20);
+        recommendation.recommendationScores.put("Data Fabric", recommendation.recommendationScores.get("Data Fabric") + 15);
+        recommendation.recommendationScores.put("Data Mesh", recommendation.recommendationScores.get("Data Mesh") + 10);
+
+        recommendation.recommendationMessages.put("selfServiceBI",
+  "When users are technically proficient, architectures that enable direct access to raw or semi-structured data offer greater flexibility and analytical power.");
+
 end
 
-rule "Engineers Skill Set - High"
+rule "dashboardUsage - Yes"
     when
-        CreateUserDataDto(question.questionKey.equals("Engineers Skill Set")) and CreateUserDataDto(userData.equals("High"))
+        UserData(question.questionKey.equals("dashboardUsage")) and
+        UserData(userData.equals("Yes, interactive dashboards and ad hoc queries are essential."))
     then
-        recommendation.recommendationScores.put("dataMesh", recommendation.recommendationScores.get("dataMesh") + 25);
+        recommendation.recommendationScores.put("Data Lakehouse", recommendation.recommendationScores.get("Data Lakehouse") + 15);
+        recommendation.recommendationScores.put("Data Fabric", recommendation.recommendationScores.get("Data Fabric") + 15);
+        recommendation.recommendationScores.put("Modern Data Warehouse", recommendation.recommendationScores.get("Modern Data Warehouse") + 10);
+
+        recommendation.recommendationMessages.put("dashboardUsage",
+                         "Architectures that enable interactive dashboards and ad hoc queries support dynamic data exploration and quick insights, especially in environments requiring low-latency access.");
+
 end
-*/
+
+rule "dashboardUsage - No"
+    when
+        UserData(question.questionKey.equals("dashboardUsage")) and
+        UserData(userData.equals("No, only static or scheduled reports are needed."))
+    then
+        recommendation.recommendationScores.put("Data Warehouse", recommendation.recommendationScores.get("Data Warehouse") + 15);
+        recommendation.recommendationScores.put("Modern Data Warehouse", recommendation.recommendationScores.get("Modern Data Warehouse") + 5);
+end
+
+rule "slaRequirement - High – Real-time or low-latency response and high availability are required."
+    when
+        UserData(question.questionKey.equals("slaRequirement")) and
+        UserData(userData.equals("High – Real-time or low-latency response and high availability are required."))
+    then
+        recommendation.recommendationScores.put("Data Fabric", recommendation.recommendationScores.get("Data Fabric") + 15);
+        recommendation.recommendationScores.put("Data Lakehouse", recommendation.recommendationScores.get("Data Lakehouse") + 15);
+        recommendation.recommendationScores.put("Modern Data Warehouse", recommendation.recommendationScores.get("Modern Data Warehouse") + 10);
+
+        recommendation.recommendationMessages.put("slaRequirement",
+                         "Strict performance and availability expectations require architectures that can support low-latency access, resilience, and consistent delivery of data insights.");
+
+        recommendation.addQuestionToStack("availabilityRequirement");
+
+end
+
+rule "slaRequirement - Moderate – Reports can tolerate response times in minutes and moderate uptime."
+    when
+        UserData(question.questionKey.equals("slaRequirement")) and
+        UserData(userData.equals("Moderate – Reports can tolerate response times in minutes and moderate uptime."))
+    then
+        recommendation.recommendationScores.put("Data Warehouse", recommendation.recommendationScores.get("Data Warehouse") + 10);
+        recommendation.recommendationScores.put("Modern Data Warehouse", recommendation.recommendationScores.get("Modern Data Warehouse") + 5);
+end
+
+rule "availabilityRequirement - Yes – High availability and disaster recovery measures are essential."
+    when
+        UserData(question.questionKey.equals("availabilityRequirement")) and
+        UserData(userData.equals("Yes – High availability and disaster recovery measures are essential."))
+    then
+        recommendation.recommendationScores.put("Data Fabric", recommendation.recommendationScores.get("Data Fabric") + 15);
+        recommendation.recommendationScores.put("Data Lakehouse", recommendation.recommendationScores.get("Data Lakehouse") + 10);
+        recommendation.recommendationScores.put("Modern Data Warehouse", recommendation.recommendationScores.get("Modern Data Warehouse") + 10);
+
+        recommendation.recommendationMessages.put("availabilityRequirement",
+                         "When continuous uptime and disaster recovery capabilities are crucial, resilient architectures with built-in failover and regional replication become essential.");
+
+        recommendation.addQuestionToStack("customerAccess");
+
+end
+
+rule "availabilityRequirement - No – Standard availability is sufficient, minor downtime is acceptable."
+    when
+        UserData(question.questionKey.equals("availabilityRequirement")) and
+        UserData(userData.equals("No – Standard availability is sufficient, minor downtime is acceptable."))
+    then
+        recommendation.recommendationScores.put("Data Warehouse", recommendation.recommendationScores.get("Data Warehouse") + 10);
+end
+
+rule "customerAccess - Yes – The solution must be highly available and always accessible."
+    when
+        UserData(question.questionKey.equals("customerAccess")) and
+        UserData(userData.equals("Yes – The solution must be highly available and always accessible."))
+    then
+        recommendation.recommendationScores.put("Data Fabric", recommendation.recommendationScores.get("Data Fabric") + 15);
+        recommendation.recommendationScores.put("Data Lakehouse", recommendation.recommendationScores.get("Data Lakehouse") + 10);
+        recommendation.recommendationScores.put("Modern Data Warehouse", recommendation.recommendationScores.get("Modern Data Warehouse") + 10);
+
+        recommendation.recommendationMessages.put("customerAccess",
+                         "For systems requiring constant customer availability, architectures should be designed with fault tolerance, automatic failover and minimal downtime in mind.");
+
+end
+
+rule "customerAccess - No – Some scheduled maintenance windows or short downtimes are acceptable."
+    when
+        UserData(question.questionKey.equals("customerAccess")) and
+        UserData(userData.equals("No – Some scheduled maintenance windows or short downtimes are acceptable."))
+    then
+        recommendation.recommendationScores.put("Data Warehouse", recommendation.recommendationScores.get("Data Warehouse") + 10);
+
+end
+
+rule "dataMovementChallenge - Yes – Integrating data across sources and formats is complex and requires special handling."
+    when
+        UserData(question.questionKey.equals("dataMovementChallenge")) and
+        UserData(userData.equals("Yes – Integrating data across sources and formats is complex and requires special handling."))
+    then
+        recommendation.recommendationScores.put("Data Fabric", recommendation.recommendationScores.get("Data Fabric") + 20);
+        recommendation.recommendationScores.put("Data Mesh", recommendation.recommendationScores.get("Data Mesh") + 10);
+        recommendation.recommendationScores.put("Data Lakehouse", recommendation.recommendationScores.get("Data Lakehouse") + 5);
+
+        recommendation.recommendationMessages.put("dataMovementChallenge",
+                         "Architectures that simplify complex data integration across platforms through orchestration, virtualization and metadata awareness.");
+
+end
+
+rule "dataMovementChallenge - No – Data comes from a small number of consistent sources with little complexity."
+    when
+        UserData(question.questionKey.equals("dataMovementChallenge")) and
+        UserData(userData.equals("No – Data comes from a small number of consistent sources with little complexity."))
+    then
+        recommendation.recommendationScores.put("Data Warehouse", recommendation.recommendationScores.get("Data Warehouse") + 10);
+
+end

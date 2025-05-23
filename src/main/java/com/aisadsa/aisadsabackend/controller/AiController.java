@@ -15,7 +15,7 @@ public class AiController {
     private final AiService aiService;
     private final JwtService jwtService;
 
-    @GetMapping("/qa")
+    @PostMapping("/qa")
     public String chat(@RequestHeader("Authorization") String authHeader, @RequestBody String message) {
         String jwt = authHeader.substring(7);
         String username = jwtService.extractUsername(jwt);

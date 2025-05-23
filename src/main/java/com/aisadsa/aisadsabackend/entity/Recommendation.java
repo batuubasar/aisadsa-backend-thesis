@@ -97,8 +97,13 @@ public class Recommendation {
         }
     }
     public String getNextQuestionKey() {
-        return questionStack.peek();
+        if (!questionStack.isEmpty()) {
+            return questionStack.peek();
+        }
+        else return null;
     }
+
+    public int getRemainingQuestionCount() { return questionStack.size(); }
 
     public Boolean isQuestionStackEmpty (){
         return questionStack.isEmpty();

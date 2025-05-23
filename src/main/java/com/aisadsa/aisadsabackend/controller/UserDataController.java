@@ -2,6 +2,7 @@ package com.aisadsa.aisadsabackend.controller;
 
 import com.aisadsa.aisadsabackend.auth.service.JwtService;
 import com.aisadsa.aisadsabackend.core.dto.request.CreateUserDataRequest;
+import com.aisadsa.aisadsabackend.core.dto.response.UserDataCreateResponse;
 import com.aisadsa.aisadsabackend.core.dto.response.UserDataResponse;
 import com.aisadsa.aisadsabackend.service.UserDataService;
 import jakarta.validation.Valid;
@@ -27,7 +28,7 @@ public class UserDataController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> create(@RequestHeader("Authorization") String authHeader, @Valid @RequestBody CreateUserDataRequest createUserDataRequest) {
+    public ResponseEntity<UserDataCreateResponse> create(@RequestHeader("Authorization") String authHeader, @Valid @RequestBody CreateUserDataRequest createUserDataRequest) {
         String jwt = authHeader.substring(7);
         String username = jwtService.extractUsername(jwt);
         return userDataService.save(username ,createUserDataRequest);

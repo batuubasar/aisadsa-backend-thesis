@@ -52,7 +52,7 @@ public class RecommendationService {
         return recommendation;
     }
 
-    public Boolean setRecommendation(UserData userData) {
+    public void setRecommendation(UserData userData) {
         if (recommendation == null) {
             recommendation = startSession(userData.getUser().getUsername());
         }
@@ -62,12 +62,13 @@ public class RecommendationService {
 
         kieSession.insert(userData);
         kieSession.fireAllRules();
-        return recommendation.isQuestionStackEmpty();
     }
 
     public String getNextQuestion(){
         return recommendation.getNextQuestionKey();
     }
+
+    public int getRemainingQuestionCount() { return recommendation.getRemainingQuestionCount(); }
 
     public ResponseEntity<String> endSession() {
         String result = recommendation.getMaxRecommendation();

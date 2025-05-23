@@ -4,6 +4,7 @@ package com.aisadsa.aisadsabackend.service;
 import com.aisadsa.aisadsabackend.auth.entity.User;
 import com.aisadsa.aisadsabackend.core.dto.CreateUserDataDto;
 import com.aisadsa.aisadsabackend.core.dto.request.CreateUserDataRequest;
+import com.aisadsa.aisadsabackend.core.dto.response.UserDataCreateResponse;
 import com.aisadsa.aisadsabackend.core.dto.response.UserDataResponse;
 import com.aisadsa.aisadsabackend.core.exception.BadRequestException;
 import com.aisadsa.aisadsabackend.core.exception.UserDataNotFoundException;
@@ -39,26 +40,27 @@ public class UserDataService {
         return ResponseEntity.ok(userDataResponseList);
     }
 
-    public ResponseEntity<String> save(String username, CreateUserDataRequest createUserDataRequest) {
+    public ResponseEntity<UserDataCreateResponse> save(String username, CreateUserDataRequest createUserDataRequest) {
         User user = userService.getUserByUsername(username);
         Question question = questionService.getQuestionByKey(createUserDataRequest.getQuestionKey());
 
         CreateUserDataDto createUserDataDto = new CreateUserDataDto(user, question, createUserDataRequest.getUserData());
         UserData userData = UserDataMapper.INSTANCE.getUserDataFromCreateUserDataDto(createUserDataDto);
 
-//        userDataRepository.findByUserIdAndQuestionId(user.getId(), question.getId()).ifPresent(ud -> {throw new BadRequestException("UserData already exists!");});
         userDataRepository.save(userData);
-        Boolean isRecommendationFinished  = recommendationService.setRecommendation(userData);
+        recommendationService.setRecommendation(userData);
 
-        // TODO userData oluştururken userId ve questionId bakmak işini yapmayalım!
-
+        /*
         if (isRecommendationFinished) {
             return submit();
         }
         else {
             String nextQuestionKey = recommendationService.getNextQuestion();
             return ResponseEntity.status(HttpStatus.CREATED).body(nextQuestionKey);
-        }
+        }*/
+        String nextQuestionKey = recommendationService.getNextQuestion();
+        int remainingQuestionCount = recommendationService.getRemainingQuestionCount();
+        return ResponseEntity.ok(new UserDataCreateResponse(nextQuestionKey, remainingQuestionCount));
     }
 
     public ResponseEntity<String> update(String username, CreateUserDataRequest createUserDataRequest) {

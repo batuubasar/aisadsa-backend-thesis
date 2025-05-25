@@ -24,10 +24,12 @@ public class AiController {
         return aiService.chat(chatRequest);
     }
 
+    @GetMapping("/document-generation")
+    public String generateDocument(@RequestHeader("Authorization") String authHeader) {
+        String jwt = authHeader.substring(7);
+        String username = jwtService.extractUsername(jwt);
 
-
-    /*@GetMapping("/document-generation")
-    public String generateDocument(@RequestParam String topic) {
-        return aiService.generateDocument(topic);
-    }*/
+        ChatRequest chatRequest = new ChatRequest(username);
+        return aiService.generateDocument(chatRequest);
+    }
 }

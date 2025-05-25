@@ -14,4 +14,10 @@ public class ChatRequest {
         this.message = message;
         this.username = username;
     }
+
+    public ChatRequest(String username) {
+        this.sessionId = "002";
+        this.message = null;
+        this.username = username;
+    }
 }

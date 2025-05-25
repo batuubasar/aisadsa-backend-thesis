@@ -53,6 +53,26 @@ public class AiService {
                 .content();
     }
 
+    public String generateDocument(ChatRequest chatRequest) {
+        String sessionId = chatRequest.getSessionId();
+
+        String systemPrompt = """
+                     Generate document content for the advice according to adviceText, questions and user's answers for them.
+                     It should be at least two pages long and include comprehensive information covering all aspects of the topic,
+                     including background information, current trends or developments, relevant statistics or data, key concepts or
+                     theories, potential challenges, and future outlook. The document should be well-structured with clear headings
+                     and sub-headings, and it should provide an in-depth analysis that offers insights and engages the reader effectively.
+                """;
+
+        return chatClient
+                .prompt()
+                .messages(buildSessionContext(sessionId, chatRequest.getUsername()))
+                .system(systemPrompt)
+                .user("Create this document using system prompts")
+                .advisors(a -> a.param(AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY, sessionId))
+                .call()
+                .content();
+    }
 
     public SystemMessage buildSessionContext(String sessionId, String username) {
         String template = """
@@ -94,31 +114,4 @@ public class AiService {
         PromptTemplate promptTemplate = new PromptTemplate(template, variables);
         return new SystemMessage(promptTemplate.render());
     }
-
-
-
-
-    /*public String generateDocument(String topic) {
-        *//* Initialize variable *//*
-        PromptTemplate promptTemplate =null;
-        try {
-
-            *//* Create a prompt template with placeholders for the topic and document content instructions *//*
-            promptTemplate = new PromptTemplate("""
-                 Generate document content for a {topic}. 
-                 It should be at least two pages long and include comprehensive information covering all aspects of the topic, 
-                 including background information, current trends or developments, relevant statistics or data, key concepts or 
-                 theories, potential challenges, and future outlook. The document should be well-structured with clear headings
-                 and sub-headings, and it should provide an in-depth analysis that offers insights and engages the reader effectively.
-            """);
-
-            *//* Replace the placeholder {topic} with the actual topic provided *//*
-            promptTemplate.add("topic", topic);
-        }catch(Exception e) {
-            log.error("error : "+e.getMessage());
-        }
-
-        *//* Generate document content using the AI client and return the text of the generated content *//*
-        return chatClient.call(promptTemplate.create()).getResult().getOutput().getContent();
-    }*/
 }

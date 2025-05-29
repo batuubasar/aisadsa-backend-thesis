@@ -126,7 +126,7 @@ public class Recommendation {
         StringBuilder combinedMessage = new StringBuilder();
         for (String message : recommendationMessages.values()) {
             if (message != null && !message.isBlank()) {
-                combinedMessage.append(message).append(" ");
+                combinedMessage.append("\n - ").append(message);
             }
         }
         return combinedMessage.toString().trim();

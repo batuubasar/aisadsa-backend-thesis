@@ -27,4 +27,6 @@ public class UserData {
     @Column(name = "user_data", nullable = false)
     private String userData;
 
+    //todo buraya recommendation gelecek
+
 }

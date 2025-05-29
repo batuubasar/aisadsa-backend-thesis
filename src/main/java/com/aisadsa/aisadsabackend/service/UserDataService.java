@@ -40,6 +40,10 @@ public class UserDataService {
         return ResponseEntity.ok(userDataResponseList);
     }
 
+    public ResponseEntity<List<UserDataResponse>> getDataOfUserByRecommendationId(String username, int recommendationId) {
+        return null;
+    }
+
     public ResponseEntity<UserDataCreateResponse> save(String username, CreateUserDataRequest createUserDataRequest) {
         User user = userService.getUserByUsername(username);
         Question question = questionService.getQuestionByKey(createUserDataRequest.getQuestionKey());
@@ -50,14 +54,14 @@ public class UserDataService {
         userDataRepository.save(userData);
         recommendationService.setRecommendation(userData);
 
-        /*
-        if (isRecommendationFinished) {
-            return submit();
-        }
-        else {
-            String nextQuestionKey = recommendationService.getNextQuestion();
-            return ResponseEntity.status(HttpStatus.CREATED).body(nextQuestionKey);
-        }*/
+        // todo session implementasyonu
+        //  recommendationService.setRecommendation(userData);
+        // userData.setSessionId(recommendationService.getRecommendationId));
+        // userDataRepository.save(userData);
+
+        // todo
+        // getUserSessionData() -> userDataRepository.findByUserIdAndSessionId(userId, sessionId);
+
         String nextQuestionKey = recommendationService.getNextQuestion();
         int remainingQuestionCount = recommendationService.getRemainingQuestionCount();
         return ResponseEntity.ok(new UserDataCreateResponse(nextQuestionKey, remainingQuestionCount));

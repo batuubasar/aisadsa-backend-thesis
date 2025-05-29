@@ -82,7 +82,7 @@ public class RecommendationService {
         }
         recommendation = null;
 
-        adviceText = "The data architecture most aligned with your needs and requirements is " + result + ".\n\n" +
+        adviceText = "The data architecture most aligned with your needs and requirements is **" + result + "**.\n\n" +
                 recommendationMessage;
 
 

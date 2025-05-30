@@ -102,248 +102,228 @@ public class AiService {
 
     public String generateDiagram(ChatRequest chatRequest) {
         String sessionId = chatRequest.getSessionId();
-
-        // todo getMaxRecommendation ile hangisiyse ona göre uygun diyagram promptu ayarlayalım
         String username = chatRequest.getUsername();
         String recommendation_architecture = recommendationService.getLatestRecommendationArchitectureByUsername(username);
-        String systemPrompt = /*"""
-                    Generate an architectural diagram according to adviceText, questions and user's answers.
-                    It should be in mermaid.js format. Don't write any other thing other than architectural diagram code, just the mermaid.js code should be returned.
-                    Keep the architecture below as long as it fits all the user related data and if there is anything has to be changed,
-                    just change those minor things.
-                    \n
-                    Architectural diagram template:
-                    \n
-                    """*/
-                """
+
+        String systemPrompt = """
                         Generate an architectural diagram according to adviceText, questions and user's answers. It should be in mermaid.js format.
                         Don't write any other thing other than architectural diagram code, just the mermaid.js code should be returned.
                         Keep the architecture below as long as it fits all the user related data and if there is anything has to be changed,
                         just change those minor things.
                 """;
-        if (recommendation_architecture.equals("Data Warehouse")) {
-            systemPrompt += """
-            If the user answered 'Yes' to the streaming (real-time) question, then include both 'B -- Real-Time Processing --> C' and
-            'B -- Batch Processing --> C' in the diagram. However, since this is a Data Warehouse architecture where real-time is generally
-            not typical, only add the real-time flow if the user's answer explicitly requires it. Otherwise, do not include it. Do not change
-             any other parts of the diagram unnecessarily.
-            diagram:
-                    flowchart TD
- subgraph subGraph0["Data Warehouse Architecture"]
-        A["Data Sources"]
-        B["Data Ingestion"]
-        C["Data Processing"]
-        M["Model - RDW"]
-  end
- subgraph subGraph1["User Interaction"]
-        F["Analytics & Reporting"]
-        G["User Access"]
-  end
-    A -- Structured Data --> B
-    B -- Batch Processing --> C
-    C --> M
-    M --> F
-    F --> G
 
-    M@{ shape: db}
- """;
-        }
-        else if (recommendation_architecture.equals("Data Lake")){
-            systemPrompt += """
-            In the flow 'A -- Streaming & Structured & Unstructured Data --> B', analyze nonRelationalUsage,
-                        streaming and other related answers to decide whether to include or remove Streaming, Structured or Unstructured.
-            In the lines 'B -- Real-Time Processing --> C' and 'B -- Batch Processing --> C', choose real-time or batch based
-             on the user's answer about processing type. Also, include or exclude components like
-             'Machine Learning' based on relevant answers. Stay aligned with
-             the architectural diagram I’ll provide below — treat it as the main reference structure.Only update elements that
-             already exist in the diagram based on the user's answers: if it's already appropriate, keep it; if it's missing and
-             required, add it; if it’s irrelevant, remove it.
-             Diagram:
-                    flowchart TD
- subgraph subGraph0["Data Lake Architecture"]
-        A["Data Sources"]
-        B["Data Ingestion"]
-        C["Data Processing"]
-        D["Data Storage - Data Lake"]
-        I["Machine Learning"]
-  end
- subgraph subGraph1["User Interaction"]
-        F["Analytics & Reporting"]
-        G["User Access"]
-  end
-    A -- Streaming & Structured & Unstructured Data --> B
-    B -- "Real-Time Processing" --> C
-    B -- Batch Processing --> C
-    C --> D
-    D --> I & F
-    F --> G
-
-    D@{ shape: db}
- """;
-        }
-        else if (recommendation_architecture.equals("Modern Data Warehouse")){
-            systemPrompt += """
-            In the flow 'A -- Streaming & Structured & Unstructured Data --> B', analyze nonRelationalUsage,
-                        streaming and other related answers to decide whether to include or remove Streaming, Structured or Unstructured.
-            If the user answered 'Yes' to the streaming (real-time) question, then include both 'B -- Real-Time Processing --> C'
-            and 'B -- Batch Processing --> C' in the diagram. Add the 'Real-Time' flow between B and C accordingly
-            Diagram:
-                    flowchart TD
- subgraph subGraph0["Modern Data Warehouse Architecture"]
-        A["Data Sources"]
-        B["Data Ingestion"]
-        C["Data Processing"]
-        D["Data Storage - Data Lake"]
-        I["Machine Learning"]
-        M["Model - RDW"]
-  end
- subgraph subGraph1["User Interaction"]
-        F["Analytics & Reporting"]
-        G["User Access"]
-  end
-    A -- Streaming & Structured & Unstructured Data --> B
-    B -- Batch Processing --> C
-    C --> D
-    D --> M & I
-    M --> F
-    F --> G
-
-    D@{ shape: db}
-    M@{ shape: db}
- """;
-        }
-        else if (recommendation_architecture.equals("Data Fabric")){
-            systemPrompt += """
-            In the flow 'A -- Streaming & Structured & Unstructured Data --> B', analyze nonRelationalUsage,
-                        streaming and other related answers to decide whether to include or remove Streaming, Structured or Unstructured.
-            In the lines 'B -- Real-Time Processing --> C' and 'B -- Batch Processing --> C', choose real-time or batch based
-             on the user's answer about processing type. Also, include or exclude components like 'Master Data Management',
-             'Machine Learning', 'Advanced Security' or 'Relational/BI Access' based on relevant answers. Stay aligned with
-             the architectural diagram I’ll provide below — treat it as the main reference structure.Only update elements that
-             already exist in the diagram based on the user's answers: if it's already appropriate, keep it; if it's missing and
-             required, add it; if it’s irrelevant, remove it.
+        switch (recommendation_architecture) {
+            case "Data Warehouse" -> systemPrompt += """
+                    If the user answered 'Yes' to the streaming (real-time) question, then include both 'B -- Real-Time Processing --> C' and
+                    'B -- Batch Processing --> C' in the diagram. However, since this is a Data Warehouse architecture where real-time is generally
+                    not typical, only add the real-time flow if the user's answer explicitly requires it. Otherwise, do not include it. Do not change
+                     any other parts of the diagram unnecessarily.
                     Diagram:
-                    flowchart TD
- subgraph subGraph0["Data Fabric Architecture"]
-        A["Data Sources"]
-        B["Data Ingestion"]
-        C["Data Processing"]
-        MDM["Master Data Management"]
-        D["Data Storage - Data Lake"]
-        M["Model - RDW"]
-        I["Machine Learning"]
-        SL["Serving Layer / BI Access"]
-        SEC["Advanced Security"]
-  end
- subgraph subGraph1["User Interaction"]
-        F["Analytics & Reporting"]
-        G["User Access"]
-  end
-    A -- Streaming & Structured & Unstructured Data --> B
-    B -- "Real-Time Processing" --> C
-    B -- Batch Processing --> C
-    C --> MDM
-    MDM --> D
-    D --> SEC & I
-    SEC --> M
-    I --> SL
-    M --> SL
-    SL --> F
-    F --> G
-    API["API Layer"] -.-> M & F & G
-    META["Metadata Layer"] --- C & D & F & MDM & M
-
-    D@{ shape: db}
-    M@{ shape: db}
-     META:::meta
-    classDef meta fill:#f8f0d7,stroke:#aaa,stroke-width:1px,font-style:italic
- """;
-        }
-        else if (recommendation_architecture.equals("Data Lakehouse")){
-            systemPrompt += """
-            In the flow 'A -- Streaming & Structured & Unstructured Data --> B', analyze nonRelationalUsage,
-                        streaming and other related answers to decide whether to include or remove Streaming, Structured or Unstructured.
-             In the lines 'B -- Real-Time Processing --> C' and 'B -- Batch Processing --> C', choose real-time or batch based
-             on the user's answer about processing type. Also, include or exclude components like 'Master Data Management',
-             'Machine Learning', 'Advanced Security' or 'Relational/BI Access' based on relevant answers. Stay aligned with
-             the architectural diagram I’ll provide below — treat it as the main reference structure.Only update elements that
-             already exist in the diagram based on the user's answers: if it's already appropriate, keep it; if it's missing and
-             required, add it; if it’s irrelevant, remove it.
-                    Diagram:
-                    flowchart TD
- subgraph subGraph0["Data Lakehouse Architecture"]
-        A["Data Sources"]
-        B["Data Ingestion"]
-        C["Data Processing - Delta Engine"]
-        MDM["Master Data Management"]
-        D["Unified Data Storage  DataLake + DeltaLake"]
-        E["Time Travel / ACID Compliance"]
-        I["Machine Learning"]
-        SL["Serving Layer - Relational/BI Access"]
-        SEC["Advanced Security"]
-  end
- subgraph subGraph1["User Interaction"]
-        F["SQL Analytics & Reporting"]
-        G["User Access"]
-  end
-    A -- Streaming & Structured & Unstructured Data --> B
-    B -- "Real-Time Processing" --> C
-    B -- Batch Processing --> C
-    C --> MDM
-    MDM --> D
-    D --> SEC & I
-    SEC --> E
-    I --> SL
-    SL --> F
-    F --> G
-    API["API Layer"] -.-> I & F & G
-    META["Metadata Layer"] --- C & D & F & MDM
-
-    D@{ shape: db}
-     META:::meta
-    classDef meta fill:#f8f0d7,stroke:#aaa,stroke-width:1px,font-style:italic
- """;
-        }
-        else if (recommendation_architecture.equals("Data Mesh")){
-            systemPrompt += """
-                    flowchart TD
- subgraph Domain1["Domain: A"]
-        D1["Data Processing"]
-        P1["Data Product"]
-  end
- subgraph Domain2["Domain: B"]
-        D2["Data Processing"]
-        P2["Data Product"]
-  end
- subgraph subGraph0["Data Mesh Architecture"]
-        A["Data Sources"]
-        B["Domain-Oriented Ingestion"]
-        Domain1
-        Domain2
-        I["Cross-Domain Machine Learning"]
-        M["Data Product Consumption"]
-  end
- subgraph subGraph1["User Interaction"]
-        F["Analytics & Reporting"]
-        G["User Access"]
-  end
-    A --> B
-    B --> D1 & D2
-    D1 --> P1
-    P1 --> M & I
-    D2 --> P2
-    P2 --> M & I
-    I --> M
-    M --> F
-    F --> G
-    PLATFORM["Self-Serve Infrastructure"] --> D1 & D2 & I
-    GOVERN["Federated Governance"] --> P1 & P2
-
-     PLATFORM:::platform
-     GOVERN:::govern
-    classDef platform fill:#f0f8ff,stroke:#3399cc
-    classDef govern fill:#fff0f5,stroke:#cc3366
-""";
+                            flowchart TD
+                             subgraph subGraph0["Data Warehouse Architecture"]
+                                    A["Data Sources"]
+                                    B["Data Ingestion"]
+                                    C["Data Processing"]
+                                    M["Model - RDW"]
+                              end
+                             subgraph subGraph1["User Interaction"]
+                                    F["Analytics & Reporting"]
+                                    G["User Access"]
+                              end
+                                A -- Structured Data --> B
+                                B -- Batch Processing --> C
+                                C --> M
+                                M --> F
+                                F --> G
+                    
+                                M@{ shape: db}
+                    """;
+            case "Data Lake" -> systemPrompt += """
+                    In the flow 'A -- Streaming & Structured & Unstructured Data --> B', analyze nonRelationalUsage,
+                                streaming and other related answers to decide whether to include or remove Streaming, Structured or Unstructured.
+                    In the lines 'B -- Real-Time Processing --> C' and 'B -- Batch Processing --> C', choose real-time or batch based
+                     on the user's answer about processing type. Also, include or exclude components like
+                     'Machine Learning' based on relevant answers. Stay aligned with
+                     the architectural diagram I’ll provide below — treat it as the main reference structure.Only update elements that
+                     already exist in the diagram based on the user's answers: if it's already appropriate, keep it; if it's missing and
+                     required, add it; if it’s irrelevant, remove it.
+                     Diagram:
+                         flowchart TD
+                         subgraph subGraph0["Data Lake Architecture"]
+                                A["Data Sources"]
+                                B["Data Ingestion"]
+                                C["Data Processing"]
+                                D["Data Storage - Data Lake"]
+                                I["Machine Learning"]
+                          end
+                         subgraph subGraph1["User Interaction"]
+                                F["Analytics & Reporting"]
+                                G["User Access"]
+                          end
+                            A -- Streaming & Structured & Unstructured Data --> B
+                            B -- "Real-Time Processing" --> C
+                            B -- Batch Processing --> C
+                            C --> D
+                            D --> I & F
+                            F --> G
+                    
+                            D@{ shape: db}
+                    """;
+            case "Modern Data Warehouse" -> systemPrompt += """
+                    In the flow 'A -- Streaming & Structured & Unstructured Data --> B', analyze nonRelationalUsage,
+                                streaming and other related answers to decide whether to include or remove Streaming, Structured or Unstructured.
+                    If the user answered 'Yes' to the streaming (real-time) question, then include both 'B -- Real-Time Processing --> C'
+                    and 'B -- Batch Processing --> C' in the diagram. Add the 'Real-Time' flow between B and C accordingly
+                        Diagram:
+                            flowchart TD
+                             subgraph subGraph0["Modern Data Warehouse Architecture"]
+                                    A["Data Sources"]
+                                    B["Data Ingestion"]
+                                    C["Data Processing"]
+                                    D["Data Storage - Data Lake"]
+                                    I["Machine Learning"]
+                                    M["Model - RDW"]
+                              end
+                             subgraph subGraph1["User Interaction"]
+                                    F["Analytics & Reporting"]
+                                    G["User Access"]
+                              end
+                                A -- Streaming & Structured & Unstructured Data --> B
+                                B -- Batch Processing --> C
+                                C --> D
+                                D --> M & I
+                                M --> F
+                                F --> G
+                    
+                                D@{ shape: db}
+                                M@{ shape: db}
+                    """;
+            case "Data Fabric" -> systemPrompt += """
+                    In the flow 'A -- Streaming & Structured & Unstructured Data --> B', analyze nonRelationalUsage,
+                                streaming and other related answers to decide whether to include or remove Streaming, Structured or Unstructured.
+                    In the lines 'B -- Real-Time Processing --> C' and 'B -- Batch Processing --> C', choose real-time or batch based
+                     on the user's answer about processing type. Also, include or exclude components like 'Master Data Management',
+                     'Machine Learning', 'Advanced Security' or 'Relational/BI Access' based on relevant answers. Stay aligned with
+                     the architectural diagram I’ll provide below — treat it as the main reference structure.Only update elements that
+                     already exist in the diagram based on the user's answers: if it's already appropriate, keep it; if it's missing and
+                     required, add it; if it’s irrelevant, remove it.
+                            Diagram:
+                                flowchart TD
+                                 subgraph subGraph0["Data Fabric Architecture"]
+                                        A["Data Sources"]
+                                        B["Data Ingestion"]
+                                        C["Data Processing"]
+                                        MDM["Master Data Management"]
+                                        D["Data Storage - Data Lake"]
+                                        M["Model - RDW"]
+                                        I["Machine Learning"]
+                                        SL["Serving Layer / BI Access"]
+                                        SEC["Advanced Security"]
+                                  end
+                                 subgraph subGraph1["User Interaction"]
+                                        F["Analytics & Reporting"]
+                                        G["User Access"]
+                                  end
+                                    A -- Streaming & Structured & Unstructured Data --> B
+                                    B -- "Real-Time Processing" --> C
+                                    B -- Batch Processing --> C
+                                    C --> MDM
+                                    MDM --> D
+                                    D --> SEC & I
+                                    SEC --> M
+                                    I --> SL
+                                    M --> SL
+                                    SL --> F
+                                    F --> G
+                                    API["API Layer"] -.-> M & F & G
+                                    META["Metadata Layer"] --- C & D & F & MDM & M
+                                    D@{ shape: db}
+                                    M@{ shape: db}
+                                     META:::meta
+                                    classDef meta fill:#f8f0d7,stroke:#aaa,stroke-width:1px,font-style:italic
+                    """;
+            case "Data Lakehouse" -> systemPrompt += """
+                    In the flow 'A -- Streaming & Structured & Unstructured Data --> B', analyze nonRelationalUsage,
+                                streaming and other related answers to decide whether to include or remove Streaming, Structured or Unstructured.
+                     In the lines 'B -- Real-Time Processing --> C' and 'B -- Batch Processing --> C', choose real-time or batch based
+                     on the user's answer about processing type. Also, include or exclude components like 'Master Data Management',
+                     'Machine Learning', 'Advanced Security' or 'Relational/BI Access' based on relevant answers. Stay aligned with
+                     the architectural diagram I’ll provide below — treat it as the main reference structure.Only update elements that
+                     already exist in the diagram based on the user's answers: if it's already appropriate, keep it; if it's missing and
+                     required, add it; if it’s irrelevant, remove it.
+                            Diagram:
+                                flowchart TD
+                                 subgraph subGraph0["Data Lakehouse Architecture"]
+                                        A["Data Sources"]
+                                        B["Data Ingestion"]
+                                        C["Data Processing - Delta Engine"]
+                                        MDM["Master Data Management"]
+                                        D["Unified Data Storage  DataLake + DeltaLake"]
+                                        E["Time Travel / ACID Compliance"]
+                                        I["Machine Learning"]
+                                        SL["Serving Layer - Relational/BI Access"]
+                                        SEC["Advanced Security"]
+                                  end
+                                 subgraph subGraph1["User Interaction"]
+                                        F["SQL Analytics & Reporting"]
+                                        G["User Access"]
+                                  end
+                                    A -- Streaming & Structured & Unstructured Data --> B
+                                    B -- "Real-Time Processing" --> C
+                                    B -- Batch Processing --> C
+                                    C --> MDM
+                                    MDM --> D
+                                    D --> SEC & I
+                                    SEC --> E
+                                    I --> SL
+                                    SL --> F
+                                    F --> G
+                                    API["API Layer"] -.-> I & F & G
+                                    META["Metadata Layer"] --- C & D & F & MDM
+                    
+                                    D@{ shape: db}
+                                     META:::meta
+                                    classDef meta fill:#f8f0d7,stroke:#aaa,stroke-width:1px,font-style:italic
+                    """;
+            case "Data Mesh" -> systemPrompt += """
+                            flowchart TD
+                             subgraph Domain1["Domain: A"]
+                                    D1["Data Processing"]
+                                    P1["Data Product"]
+                              end
+                             subgraph Domain2["Domain: B"]
+                                    D2["Data Processing"]
+                                    P2["Data Product"]
+                              end
+                             subgraph subGraph0["Data Mesh Architecture"]
+                                    A["Data Sources"]
+                                    B["Domain-Oriented Ingestion"]
+                                    Domain1
+                                    Domain2
+                                    I["Cross-Domain Machine Learning"]
+                                    M["Data Product Consumption"]
+                              end
+                             subgraph subGraph1["User Interaction"]
+                                    F["Analytics & Reporting"]
+                                    G["User Access"]
+                              end
+                                A --> B
+                                B --> D1 & D2
+                                D1 --> P1
+                                P1 --> M & I
+                                D2 --> P2
+                                P2 --> M & I
+                                I --> M
+                                M --> F
+                                F --> G
+                                PLATFORM["Self-Serve Infrastructure"] --> D1 & D2 & I
+                                GOVERN["Federated Governance"] --> P1 & P2
+                    
+                                 PLATFORM:::platform
+                                 GOVERN:::govern
+                                classDef platform fill:#f0f8ff,stroke:#3399cc
+                                classDef govern fill:#fff0f5,stroke:#cc3366
+                    """;
         }
         return chatClient
                 .prompt()

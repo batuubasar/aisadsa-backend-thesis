@@ -94,4 +94,11 @@ public class RecommendationService {
     public Optional<String> getAdviceText() {
         return Optional.ofNullable(adviceText);
     }
+
+    public String getLatestRecommendationArchitectureByUsername(String username) {
+        return recommendationRepository
+                .findLatestRecommendationByUsername(username)
+                .map(Recommendation::getRecommendation)
+                .orElse("Unknown");
+    }
 }

@@ -56,7 +56,6 @@ public class User implements UserDetails {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
-    // TODO
     @Override
     public boolean isAccountNonExpired() {
         return true;
@@ -76,5 +75,4 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-
 }

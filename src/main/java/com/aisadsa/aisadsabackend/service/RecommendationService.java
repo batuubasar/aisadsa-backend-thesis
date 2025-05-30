@@ -85,9 +85,6 @@ public class RecommendationService {
         adviceText = "The data architecture most aligned with your needs and requirements is **" + result + "**.\n\n" +
                 recommendationMessage;
 
-
-        // TODO result tek bir deger dondurmeyecek aslında ama suanda tek bir deger donuyor gibi kurgulandi ilerde uzun bir sonuc yazisi dondururken
-        // TODO bu kismi degistiririz
         return ResponseEntity.ok(adviceText);
     }
 

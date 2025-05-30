@@ -54,14 +54,6 @@ public class UserDataService {
         userDataRepository.save(userData);
         recommendationService.setRecommendation(userData);
 
-        // todo session implementasyonu
-        //  recommendationService.setRecommendation(userData);
-        // userData.setSessionId(recommendationService.getRecommendationId));
-        // userDataRepository.save(userData);
-
-        // todo
-        // getUserSessionData() -> userDataRepository.findByUserIdAndSessionId(userId, sessionId);
-
         String nextQuestionKey = recommendationService.getNextQuestion();
         int remainingQuestionCount = recommendationService.getRemainingQuestionCount();
         return ResponseEntity.ok(new UserDataCreateResponse(nextQuestionKey, remainingQuestionCount));
@@ -81,7 +73,6 @@ public class UserDataService {
         return ResponseEntity.ok("UserData successfully updated!");
     }
 
-    // TODO delete çalışmıyor!
     public ResponseEntity<String> delete(String username, String questionKey) {
         User user = userService.getUserByUsername(username);
         Question question = questionService.getQuestionByKey(questionKey);

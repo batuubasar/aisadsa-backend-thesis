@@ -82,7 +82,7 @@ public class AiService {
                         The explanation should:
                         Start with a technical summary of the user's input context, including key architectural requirements (e.g., data types, expected load, latency tolerance, processing style, storage preferences).
                         Explain how each response influenced outcomes and contributed to the selection of the final architecture.
-                        Provide a technically grounded justification for the selected architecture (e.g., Modern Data Warehouse, Data Lake, Hybrid Lambda Architecture), referencing known patterns, scalability considerations, and data processing models.
+                        Provide a technically grounded justification for the selected architecture (e.g., Modern Data Warehouse, Data Lake, Data Warehouse, Data Lakehouse, Data Fabric, Data Mesh), referencing known patterns, scalability considerations, and data processing models.
                         Outline the strengths, trade-offs, and assumptions associated with the recommendation.
                         Suggest potential enhancements or future extensions (e.g., ML integration, data governance improvements, tool stack optimizations).
 
@@ -140,7 +140,7 @@ public class AiService {
                     """;
             case "Data Lake" -> systemPrompt += """
                     In the flow 'A -- Streaming & Structured & Unstructured Data --> B', analyze nonRelationalUsage,
-                                streaming and other related answers to decide whether to include or remove Streaming, Structured or Unstructured.
+                                streaming(For example, if the answer to the streaming question is Yes, then include Streaming Data) and other related answers to decide whether to include or remove Streaming, Structured or Unstructured.
                     In the lines 'B -- Real-Time Processing --> C' and 'B -- Batch Processing --> C', choose real-time or batch based
                      on the user's answer about processing type. Also, include or exclude components like
                      'Machine Learning' based on relevant answers. Stay aligned with
@@ -171,7 +171,7 @@ public class AiService {
                     """;
             case "Modern Data Warehouse" -> systemPrompt += """
                     In the flow 'A -- Streaming & Structured & Unstructured Data --> B', analyze nonRelationalUsage,
-                                streaming and other related answers to decide whether to include or remove Streaming, Structured or Unstructured.
+                                streaming(For example, if the answer to the streaming question is Yes, then include Streaming Data) and other related answers to decide whether to include or remove Streaming, Structured or Unstructured.
                     If the user answered 'Yes' to the streaming (real-time) question, then include both 'B -- Real-Time Processing --> C'
                     and 'B -- Batch Processing --> C' in the diagram. Add the 'Real-Time' flow between B and C accordingly
                         Diagram:
@@ -200,7 +200,7 @@ public class AiService {
                     """;
             case "Data Fabric" -> systemPrompt += """
                     In the flow 'A -- Streaming & Structured & Unstructured Data --> B', analyze nonRelationalUsage,
-                                streaming and other related answers to decide whether to include or remove Streaming, Structured or Unstructured.
+                                streaming(For example, if the answer to the streaming question is Yes, then include Streaming Data) and other related answers to decide whether to include or remove Streaming, Structured or Unstructured.
                     In the lines 'B -- Real-Time Processing --> C' and 'B -- Batch Processing --> C', choose real-time or batch based
                      on the user's answer about processing type. Also, include or exclude components like 'Master Data Management',
                      'Machine Learning', 'Advanced Security' or 'Relational/BI Access' based on relevant answers. Stay aligned with
@@ -244,7 +244,7 @@ public class AiService {
                     """;
             case "Data Lakehouse" -> systemPrompt += """
                     In the flow 'A -- Streaming & Structured & Unstructured Data --> B', analyze nonRelationalUsage,
-                                streaming and other related answers to decide whether to include or remove Streaming, Structured or Unstructured.
+                                streaming(For example, if the answer to the streaming question is Yes, then include Streaming Data) and other related answers to decide whether to include or remove Streaming, Structured or Unstructured.
                      In the lines 'B -- Real-Time Processing --> C' and 'B -- Batch Processing --> C', choose real-time or batch based
                      on the user's answer about processing type. Also, include or exclude components like 'Master Data Management',
                      'Machine Learning', 'Advanced Security' or 'Relational/BI Access' based on relevant answers. Stay aligned with

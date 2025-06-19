@@ -1,4 +1,4 @@
-# Yapay Zeka Destekli Veri Mimarisi Tasarım Oturumu Asistanı
+# Yapay Zeka Destekli Veri Mimarisi Tasarım Oturumu Asistanı (Thesis Project)
 
 Bu proje, organizasyonların veri mimarisi ihtiyaçlarını analiz etmelerine ve kendilerine en uygun mimari çözümleri tasarlamalarına yardımcı olmak için geliştirilmiş bir **yapay zeka destekli karar destek sistemidir**. Dinamik soru akışları, iş kuralı motoru ve büyük dil modeli (ör. ChatGPT) entegrasyonu ile çalışır. Sistem, kullanıcı girdilerine göre öneriler sunar ve görsel diyagramlar üreterek karmaşık bilgileri erişilebilir hale getirir.
 
@@ -14,7 +14,7 @@ Bu proje, organizasyonların veri mimarisi ihtiyaçlarını analiz etmelerine ve
 
 ---
 
-## ⚙️ **Kullanılan Teknolojiler**
+##  **Kullanılan Teknolojiler**
 
 | Bileşen | Teknoloji |
 |----------|------------|
